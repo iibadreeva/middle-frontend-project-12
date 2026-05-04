@@ -4,7 +4,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import globals from 'globals';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import functional from 'eslint-plugin-functional';
+import functional from 'eslint-plugin-functional/flat';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 
 const __filename = fileURLToPath(import.meta.url);
