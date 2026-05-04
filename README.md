@@ -2,6 +2,6 @@
 
 [![Actions Status](https://github.com/iibadreeva/middle-frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/iibadreeva/middle-frontend-project-12/actions)
 
-### Чат (Slack) [демо](https://middle-frontend-project-12.onrender.com/)
+### Чат (Slack) [демо](https://middle-frontend-project-12.onrender.com)
 
 Деплой получившееся на [Render](https://render.com/).
