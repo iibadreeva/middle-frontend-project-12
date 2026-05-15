@@ -1,6 +1,11 @@
+import axios from 'axios';
 import { Formik, Field } from 'formik';
-import { Form, Button, Stack } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Form, Button, Stack, Alert } from 'react-bootstrap';
 import * as Yup from 'yup';
+import { setCredentials } from '../../features/auth/auth-slice';
+import { saveAuth } from '../../features/auth/auth-storage.js';
 import './login-form.css';
 
 const validationSchema = Yup.object({
@@ -11,65 +16,99 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Обязательное поле'),
 });
 
-const LoginForm = () => (
-  <Formik
-    initialValues={{ username: '', password: '' }}
-    validationSchema={validationSchema}
-    onSubmit={(values) => {
-      console.log(values);
-    }}
-  >
-    {({ handleSubmit }) => (
-      <Form noValidate onSubmit={handleSubmit} className="login-form mx-auto w-100 px-sm-2">
-        <h2 className="text-center mb-4">Войти</h2>
-        <Stack gap={3}>
-          <Field name="username">
-            {({ field, meta }) => (
-              <div className="form-floating">
-                <Form.Control
-                  id="login-username"
-                  type="text"
-                  name={field.name}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  placeholder="Ваш ник"
-                  autoComplete="username"
-                  className="rounded-3"
-                  isInvalid={meta.touched && Boolean(meta.error)}
-                />
-                <Form.Label htmlFor="login-username">Ваш ник</Form.Label>
-                <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
-              </div>
-            )}
-          </Field>
-          <Field name="password">
-            {({ field, meta }) => (
-              <div className="form-floating">
-                <Form.Control
-                  id="login-password"
-                  type="password"
-                  name={field.name}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  placeholder="Пароль"
-                  autoComplete="current-password"
-                  className="rounded-3"
-                  isInvalid={meta.touched && Boolean(meta.error)}
-                />
-                <Form.Label htmlFor="login-password">Пароль</Form.Label>
-                <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
-              </div>
-            )}
-          </Field>
-          <Button variant="outline-primary" type="submit" size="md" className="w-100 mb-3 ">
-            Войти
-          </Button>
-        </Stack>
-      </Form>
-    )}
-  </Formik>
-);
+const LoginForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  return (
+    <Formik
+      initialValues={{ username: '', password: '' }}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setStatus, setSubmitting }) => {
+        setStatus(null);
+
+        try {
+          const response = await axios.post('/api/v1/login', values);
+          const credentials = {
+            token: response.data.token,
+            username: response.data.username,
+          };
+
+          saveAuth(credentials);
+          dispatch(setCredentials(credentials));
+          navigate('/');
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+            setStatus('Неверные имя пользователя или пароль');
+          } else {
+            setStatus('Не удалось выполнить вход. Попробуйте еще раз.');
+          }
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ handleSubmit, status, isSubmitting }) => (
+        <Form noValidate onSubmit={handleSubmit} className="login-form mx-auto w-100 px-sm-2">
+          <h2 className="text-center mb-4">Войти</h2>
+          <Stack gap={3}>
+            {status && <Alert variant="danger" className="mb-0">{status}</Alert>}
+            <Field name="username">
+              {({ field, meta }) => (
+                <div className="form-floating">
+                  <Form.Control
+                    id="login-username"
+                    type="text"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Ваш ник"
+                    autoComplete="username"
+                    className="rounded-3"
+                    isInvalid={meta.touched && Boolean(meta.error)}
+                    disabled={isSubmitting}
+                  />
+                  <Form.Label htmlFor="login-username">Ваш ник</Form.Label>
+                  <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
+                </div>
+              )}
+            </Field>
+            <Field name="password">
+              {({ field, meta }) => (
+                <div className="form-floating">
+                  <Form.Control
+                    id="login-password"
+                    type="password"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Пароль"
+                    autoComplete="current-password"
+                    className="rounded-3"
+                    isInvalid={meta.touched && Boolean(meta.error)}
+                    disabled={isSubmitting}
+                  />
+                  <Form.Label htmlFor="login-password">Пароль</Form.Label>
+                  <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
+                </div>
+              )}
+            </Field>
+            <Button
+              variant="outline-primary"
+              type="submit"
+              size="md"
+              className="w-100 mb-3 "
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Вход...' : 'Войти'}
+            </Button>
+          </Stack>
+        </Form>
+      )}
+    </Formik>
+  );
+};
 
 export default LoginForm;

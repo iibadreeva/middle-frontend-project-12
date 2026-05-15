@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import RequireAuth from './features/auth/require-auth.jsx';
 import HomePage from './pages/home-page/home-page.jsx';
 import LoginPage from './pages/login-page/login-page.jsx';
 import NotFoundPage from './pages/not-found-page/not-found-page.jsx';
@@ -23,7 +24,14 @@ const App = () => (
           </header>
           <main className="h-100">
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route
+                path="/"
+                element={(
+                  <RequireAuth>
+                    <HomePage />
+                  </RequireAuth>
+                )}
+              />
               <Route path="/login" element={<LoginPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
