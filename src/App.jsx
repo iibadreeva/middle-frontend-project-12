@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import GuestRoute from './features/auth/guest-route.jsx';
 import RequireAuth from './features/auth/require-auth.jsx';
 import HomePage from './pages/home-page/home-page.jsx';
 import LoginPage from './pages/login-page/login-page.jsx';
@@ -32,7 +33,14 @@ const App = () => (
                   </RequireAuth>
                 )}
               />
-              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/login"
+                element={(
+                  <GuestRoute>
+                    <LoginPage />
+                  </GuestRoute>
+                )}
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>

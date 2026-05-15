@@ -1,11 +1,8 @@
-import axios from 'axios';
-import { Formik, Field } from 'formik';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Formik } from 'formik';
 import { Form, Button, Stack, Alert } from 'react-bootstrap';
 import * as Yup from 'yup';
-import { setCredentials } from '../../features/auth/auth-slice';
-import { saveAuth } from '../../features/auth/auth-storage.js';
+import FormField from '../../components/form-field/form-field.jsx';
+import useLogin from '../../features/auth/use-login.js';
 import './login-form.css';
 
 const validationSchema = Yup.object({
@@ -17,8 +14,7 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const login = useLogin();
 
   return (
     <Formik
@@ -28,21 +24,9 @@ const LoginForm = () => {
         setStatus(null);
 
         try {
-          const response = await axios.post('/api/v1/login', values);
-          const credentials = {
-            token: response.data.token,
-            username: response.data.username,
-          };
-
-          saveAuth(credentials);
-          dispatch(setCredentials(credentials));
-          navigate('/');
+          await login(values);
         } catch (error) {
-          if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
-            setStatus('Неверные имя пользователя или пароль');
-          } else {
-            setStatus('Не удалось выполнить вход. Попробуйте еще раз.');
-          }
+          setStatus(error.message);
         } finally {
           setSubmitting(false);
         }
@@ -52,49 +36,29 @@ const LoginForm = () => {
         <Form noValidate onSubmit={handleSubmit} className="login-form mx-auto w-100 px-sm-2">
           <h2 className="text-center mb-4">Войти</h2>
           <Stack gap={3}>
-            {status && <Alert variant="danger" className="mb-0">{status}</Alert>}
-            <Field name="username">
-              {({ field, meta }) => (
-                <div className="form-floating">
-                  <Form.Control
-                    id="login-username"
-                    type="text"
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    placeholder="Ваш ник"
-                    autoComplete="username"
-                    className="rounded-3"
-                    isInvalid={meta.touched && Boolean(meta.error)}
-                    disabled={isSubmitting}
-                  />
-                  <Form.Label htmlFor="login-username">Ваш ник</Form.Label>
-                  <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
-                </div>
-              )}
-            </Field>
-            <Field name="password">
-              {({ field, meta }) => (
-                <div className="form-floating">
-                  <Form.Control
-                    id="login-password"
-                    type="password"
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    placeholder="Пароль"
-                    autoComplete="current-password"
-                    className="rounded-3"
-                    isInvalid={meta.touched && Boolean(meta.error)}
-                    disabled={isSubmitting}
-                  />
-                  <Form.Label htmlFor="login-password">Пароль</Form.Label>
-                  <Form.Control.Feedback type="invalid">{meta.error}</Form.Control.Feedback>
-                </div>
-              )}
-            </Field>
+            {status && (
+              <Alert variant="danger" className="mb-0">
+                {status}
+              </Alert>
+            )}
+            <FormField
+              name="username"
+              id="login-username"
+              type="text"
+              label="Ваш ник"
+              placeholder="Ваш ник"
+              autoComplete="username"
+              disabled={isSubmitting}
+            />
+            <FormField
+              name="password"
+              id="login-password"
+              type="password"
+              label="Пароль"
+              placeholder="Пароль"
+              autoComplete="current-password"
+              disabled={isSubmitting}
+            />
             <Button
               variant="outline-primary"
               type="submit"
