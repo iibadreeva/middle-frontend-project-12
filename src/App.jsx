@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import GuestRoute from './features/auth/guest-route.jsx';
 import { clearCredentials } from './features/auth/auth-slice';
 import { clearAuth } from './features/auth/auth-storage.js';
+import { disconnectChatSocket } from './features/chat/chat-socket';
 import RequireAuth from './features/auth/require-auth.jsx';
 import { resetChat } from './features/chat/chat-slice';
 import HomePage from './pages/home-page/home-page.jsx';
@@ -16,6 +17,7 @@ const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const handleLogout = () => {
+    disconnectChatSocket();
     clearAuth();
     dispatch(clearCredentials());
     dispatch(resetChat());

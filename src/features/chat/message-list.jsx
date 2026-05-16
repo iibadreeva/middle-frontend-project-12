@@ -1,6 +1,20 @@
+import { useEffect, useRef } from 'react';
+
 const MessageList = ({ messages }) => {
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ block: 'end' });
+    }
+  }, [messages]);
+
   if (messages.length === 0) {
-    return <div className="chatEmptyState" />;
+    return (
+      <div className="d-flex justify-content-center align-items-center h-100 text-muted chatEmptyState">
+        Пока нет сообщений
+      </div>
+    );
   }
 
   return (
@@ -11,6 +25,7 @@ const MessageList = ({ messages }) => {
           <span>{message.body}</span>
         </div>
       ))}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
