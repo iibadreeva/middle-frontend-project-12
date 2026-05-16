@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import {
+  hasProfanity,
   selectConnectionError,
   selectCurrentChannelId,
   selectSendError,
@@ -31,6 +32,10 @@ const MessageForm = () => {
 
     if (isSubmitDisabled) {
       return;
+    }
+
+    if (hasProfanity(trimmedBody)) {
+      toast.warn(t('toasts.messageSanitized'));
     }
 
     try {

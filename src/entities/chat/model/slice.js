@@ -7,6 +7,7 @@ import {
   postChannel,
   postMessage,
 } from '../api/chat-api.js';
+import { sanitizeMessageText } from '../lib/profanity.js';
 
 const initialState = {
   channels: [],
@@ -35,6 +36,13 @@ const addMessage = (messages, message) => {
 
   return [...messages, message];
 };
+
+const sanitizeMessage = (message) => ({
+  ...message,
+  body: sanitizeMessageText(message.body),
+});
+
+const sanitizeMessages = (messages) => messages.map(sanitizeMessage);
 
 const addChannel = (channels, channel) => {
   const hasChannel = channels.some((currentChannel) => currentChannel.id === channel.id);
@@ -112,15 +120,16 @@ export const sendMessage = createAsyncThunk(
     } = getState();
 
     const trimmedBody = body.trim();
+    const sanitizedBody = sanitizeMessageText(trimmedBody);
 
-    if (!token || !username || !currentChannelId || trimmedBody === '') {
+    if (!token || !username || !currentChannelId || sanitizedBody === '') {
       return rejectWithValue('invalid-message');
     }
 
     try {
       return await postMessage({
         token,
-        body: trimmedBody,
+        body: sanitizedBody,
         channelId: currentChannelId,
         username,
       });
@@ -225,7 +234,7 @@ const chatSlice = createSlice({
     }),
     messageReceived: (state, action) => ({
       ...state,
-      messages: addMessage(state.messages, action.payload),
+      messages: addMessage(state.messages, sanitizeMessage(action.payload)),
     }),
     channelAdded: (state, action) => ({
       ...state,
@@ -272,7 +281,7 @@ const chatSlice = createSlice({
       .addCase(fetchInitialChatData.fulfilled, (state, action) => ({
         ...state,
         channels: action.payload.channels,
-        messages: action.payload.messages,
+        messages: sanitizeMessages(action.payload.messages),
         currentChannelId: getCurrentChannelId(action.payload.channels, state.currentChannelId),
         fetchStatus: 'succeeded',
         loadError: null,
@@ -289,7 +298,7 @@ const chatSlice = createSlice({
       }))
       .addCase(sendMessage.fulfilled, (state, action) => ({
         ...state,
-        messages: addMessage(state.messages, action.payload),
+        messages: addMessage(state.messages, sanitizeMessage(action.payload)),
         sendStatus: 'idle',
         sendError: null,
       }))

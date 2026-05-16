@@ -32,6 +32,7 @@ const ru = {
     passwordMin: 'Не менее 6 символов',
     passwordsMatch: 'Пароли должны совпадать',
     channelNameLength: 'От 3 до 20 символов',
+    noProfanity: 'Нецензурные слова запрещены',
     uniqueChannelName: 'Должно быть уникальным',
   },
   errors: {
@@ -83,6 +84,7 @@ const ru = {
     channelCreated: 'Канал создан',
     channelRenamed: 'Канал переименован',
     channelRemoved: 'Канал удалён',
+    messageSanitized: 'Сообщение содержит нецензурные слова и будет очищено перед отправкой',
   },
   notFound: {
     alt: 'Страница не найдена',

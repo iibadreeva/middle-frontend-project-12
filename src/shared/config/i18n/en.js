@@ -32,6 +32,7 @@ const en = {
     passwordMin: 'At least 6 characters',
     passwordsMatch: 'Passwords must match',
     channelNameLength: 'From 3 to 20 characters',
+    noProfanity: 'Profanity is not allowed',
     uniqueChannelName: 'Must be unique',
   },
   errors: {
@@ -81,6 +82,7 @@ const en = {
     channelCreated: 'Channel created',
     channelRenamed: 'Channel renamed',
     channelRemoved: 'Channel deleted',
+    messageSanitized: 'The message contains profanity and will be sanitized before sending',
   },
   notFound: {
     alt: 'Page not found',

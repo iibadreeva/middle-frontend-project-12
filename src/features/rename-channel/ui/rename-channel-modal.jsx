@@ -29,6 +29,7 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
       validationSchema={createChannelNameValidationSchema({
         channels,
         excludedChannelId: channel.id,
+        shouldFilterProfanity: true,
         t,
       })}
       enableReinitialize

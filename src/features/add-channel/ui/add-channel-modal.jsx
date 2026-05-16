@@ -26,7 +26,11 @@ const AddChannelModal = ({ show, onHide }) => {
   return (
     <Formik
       initialValues={{ name: '' }}
-      validationSchema={createChannelNameValidationSchema({ channels, t })}
+      validationSchema={createChannelNameValidationSchema({
+        channels,
+        shouldFilterProfanity: true,
+        t,
+      })}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
         setStatus(null);
 
