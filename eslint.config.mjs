@@ -19,7 +19,16 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/node_modules/**', 'dist', 'build', 'eslint.config.mjs'],
+    ignores: [
+      '**/node_modules/**',
+      'dist',
+      'build',
+      'eslint.config.mjs',
+      'vite.config.js',
+      'hexlet-login.js',
+      'hexlet-login.css',
+      'hexlet-login.html',
+    ],
   },
   {
     files: ['**/*.{js,jsx}'],
@@ -32,6 +41,11 @@ export default [
       },
     },
   },
+  ...compat.extends(
+    '@feature-sliced/eslint-config/rules/public-api',
+    '@feature-sliced/eslint-config/rules/layers-slices',
+    '@feature-sliced/eslint-config/rules/import-order',
+  ),
   ...compat.extends('airbnb', 'plugin:react/recommended', 'plugin:react-hooks/recommended'),
   functional.configs.recommended,
   functional.configs.disableTypeChecked,
@@ -60,6 +74,12 @@ export default [
       'no-underscore-dangle': ['error', { allow: ['__filename', '__dirname'] }],
       'react/function-component-definition': ['error', { namedComponents: 'arrow-function' }],
       'react/jsx-filename-extension': ['warn', { extensions: ['.js', '.jsx'] }],
+    },
+  },
+  {
+    files: ['src/**/index.js'],
+    rules: {
+      'import/prefer-default-export': 'off',
     },
   },
   eslintConfigPrettier,
