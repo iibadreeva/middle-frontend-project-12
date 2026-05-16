@@ -6,8 +6,8 @@ import {
   selectCurrentChannelId,
   selectCurrentMessages,
   selectFetchStatus,
+  selectHasUnauthorizedChatError,
   selectLoadError,
-  selectSendError,
   useChatBootstrap,
   useChatSocket,
 } from '@/entities/chat';
@@ -22,17 +22,17 @@ const useChat = () => {
   const currentChannelId = useSelector(selectCurrentChannelId);
   const currentMessages = useSelector(selectCurrentMessages);
   const fetchStatus = useSelector(selectFetchStatus);
+  const hasUnauthorizedChatError = useSelector(selectHasUnauthorizedChatError);
   const loadError = useSelector(selectLoadError);
-  const sendError = useSelector(selectSendError);
 
   useChatBootstrap({ isAuthenticated, fetchStatus });
   useChatSocket({ isAuthenticated, fetchStatus });
 
   useEffect(() => {
-    if (loadError === 'unauthorized' || sendError === 'unauthorized') {
+    if (hasUnauthorizedChatError) {
       logout();
     }
-  }, [loadError, logout, sendError]);
+  }, [hasUnauthorizedChatError, logout]);
 
   return {
     channels,

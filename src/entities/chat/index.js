@@ -1,12 +1,15 @@
+export { connectChatSocket, disconnectChatSocket } from './api/chat-socket.js';
 export {
-  connectChatSocket,
-  disconnectChatSocket,
-} from './api/chat-socket.js';
-export {
+  addNewChannel,
+  channelAdded,
+  channelRemoved,
+  channelRenamed,
   default as chatReducer,
   fetchInitialChatData,
   messageReceived,
+  removeChannel,
   resetChat,
+  renameChannel,
   sendMessage,
   setCurrentChannel,
   socketConnected,
@@ -14,6 +17,8 @@ export {
   socketErrored,
 } from './model/slice.js';
 export {
+  selectAddChannelError,
+  selectAddChannelStatus,
   selectChannels,
   selectChat,
   selectConnectionError,
@@ -21,8 +26,13 @@ export {
   selectCurrentChannelId,
   selectCurrentMessages,
   selectFetchStatus,
+  selectHasUnauthorizedChatError,
   selectLoadError,
   selectMessages,
+  selectRemoveChannelError,
+  selectRemoveChannelStatus,
+  selectRenameChannelError,
+  selectRenameChannelStatus,
   selectSendError,
   selectSendStatus,
   selectSocketStatus,

@@ -9,6 +9,7 @@
 
 .chatSidebar {
   min-height: 0;
+  min-width: 0;
   background-color: #f8f9fa;
 }
 
@@ -18,6 +19,7 @@
 
 .chatMain {
   min-height: 0;
+  min-width: 0;
 }
 
 .chatMessages {
@@ -46,6 +48,18 @@
 .chatChannelButton {
   border-radius: 0;
   font-weight: 500;
+}
+
+.chatChannelGroup {
+  display: flex;
+}
+
+.chatChannelGroup .dropdown-menu {
+  min-width: 100%;
+}
+
+.chatChannelToggle {
+  flex: 0 0 auto;
 }
 
 .chatHeader {

@@ -1,5 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { fetchChatData, isUnauthorizedError, postMessage } from '../api/chat-api.js';
+import {
+  deleteChannel,
+  fetchChatData,
+  isUnauthorizedError,
+  patchChannel,
+  postChannel,
+  postMessage,
+} from '../api/chat-api.js';
 
 const initialState = {
   channels: [],
@@ -7,9 +14,15 @@ const initialState = {
   currentChannelId: null,
   fetchStatus: 'idle',
   sendStatus: 'idle',
+  addChannelStatus: 'idle',
+  renameChannelStatus: 'idle',
+  removeChannelStatus: 'idle',
   socketStatus: 'idle',
   loadError: null,
   sendError: null,
+  addChannelError: null,
+  renameChannelError: null,
+  removeChannelError: null,
   connectionError: null,
 };
 
@@ -22,6 +35,29 @@ const addMessage = (messages, message) => {
 
   return [...messages, message];
 };
+
+const addChannel = (channels, channel) => {
+  const hasChannel = channels.some((currentChannel) => currentChannel.id === channel.id);
+
+  if (hasChannel) {
+    return channels.map((currentChannel) =>
+      currentChannel.id === channel.id ? channel : currentChannel,
+    );
+  }
+
+  return [...channels, channel];
+};
+
+const renameExistingChannel = (channels, channel) =>
+  channels.map((currentChannel) =>
+    currentChannel.id === channel.id ? { ...currentChannel, ...channel } : currentChannel,
+  );
+
+const removeExistingChannel = (channels, channelId) =>
+  channels.filter((channel) => channel.id !== channelId);
+
+const removeChannelMessages = (messages, channelId) =>
+  messages.filter((message) => message.channelId !== channelId);
 
 const getCurrentChannelId = (channels, currentChannelId) => {
   if (channels.length === 0) {
@@ -98,6 +134,87 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
+export const addNewChannel = createAsyncThunk(
+  'chat/addNewChannel',
+  async (name, { getState, rejectWithValue }) => {
+    const {
+      session: { token },
+    } = getState();
+    const trimmedName = name.trim();
+
+    if (!token || trimmedName === '') {
+      return rejectWithValue('invalid-channel-name');
+    }
+
+    try {
+      return await postChannel({
+        token,
+        name: trimmedName,
+      });
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        return rejectWithValue('unauthorized');
+      }
+
+      return rejectWithValue('add-channel-failed');
+    }
+  },
+);
+
+export const renameChannel = createAsyncThunk(
+  'chat/renameChannel',
+  async ({ channelId, name }, { getState, rejectWithValue }) => {
+    const {
+      session: { token },
+    } = getState();
+    const trimmedName = name.trim();
+
+    if (!token || !channelId || trimmedName === '') {
+      return rejectWithValue('invalid-channel-name');
+    }
+
+    try {
+      return await patchChannel({
+        token,
+        channelId,
+        name: trimmedName,
+      });
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        return rejectWithValue('unauthorized');
+      }
+
+      return rejectWithValue('rename-channel-failed');
+    }
+  },
+);
+
+export const removeChannel = createAsyncThunk(
+  'chat/removeChannel',
+  async (channelId, { getState, rejectWithValue }) => {
+    const {
+      session: { token },
+    } = getState();
+
+    if (!token || !channelId) {
+      return rejectWithValue('invalid-channel-id');
+    }
+
+    try {
+      return await deleteChannel({
+        token,
+        channelId,
+      });
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        return rejectWithValue('unauthorized');
+      }
+
+      return rejectWithValue('remove-channel-failed');
+    }
+  },
+);
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
@@ -110,6 +227,24 @@ const chatSlice = createSlice({
       ...state,
       messages: addMessage(state.messages, action.payload),
     }),
+    channelAdded: (state, action) => ({
+      ...state,
+      channels: addChannel(state.channels, action.payload),
+    }),
+    channelRenamed: (state, action) => ({
+      ...state,
+      channels: renameExistingChannel(state.channels, action.payload),
+    }),
+    channelRemoved: (state, action) => {
+      const nextChannels = removeExistingChannel(state.channels, action.payload.id);
+
+      return {
+        ...state,
+        channels: nextChannels,
+        messages: removeChannelMessages(state.messages, action.payload.id),
+        currentChannelId: getCurrentChannelId(nextChannels, state.currentChannelId),
+      };
+    },
     socketConnected: (state) => ({
       ...state,
       socketStatus: 'connected',
@@ -162,11 +297,69 @@ const chatSlice = createSlice({
         ...state,
         sendStatus: 'idle',
         sendError: action.payload || 'send-failed',
+      }))
+      .addCase(addNewChannel.pending, (state) => ({
+        ...state,
+        addChannelStatus: 'loading',
+        addChannelError: null,
+      }))
+      .addCase(addNewChannel.fulfilled, (state, action) => ({
+        ...state,
+        channels: addChannel(state.channels, action.payload),
+        currentChannelId: action.payload.id,
+        addChannelStatus: 'idle',
+        addChannelError: null,
+      }))
+      .addCase(addNewChannel.rejected, (state, action) => ({
+        ...state,
+        addChannelStatus: 'idle',
+        addChannelError: action.payload || 'add-channel-failed',
+      }))
+      .addCase(renameChannel.pending, (state) => ({
+        ...state,
+        renameChannelStatus: 'loading',
+        renameChannelError: null,
+      }))
+      .addCase(renameChannel.fulfilled, (state, action) => ({
+        ...state,
+        channels: renameExistingChannel(state.channels, action.payload),
+        renameChannelStatus: 'idle',
+        renameChannelError: null,
+      }))
+      .addCase(renameChannel.rejected, (state, action) => ({
+        ...state,
+        renameChannelStatus: 'idle',
+        renameChannelError: action.payload || 'rename-channel-failed',
+      }))
+      .addCase(removeChannel.pending, (state) => ({
+        ...state,
+        removeChannelStatus: 'loading',
+        removeChannelError: null,
+      }))
+      .addCase(removeChannel.fulfilled, (state, action) => {
+        const nextChannels = removeExistingChannel(state.channels, action.payload.id);
+
+        return {
+          ...state,
+          channels: nextChannels,
+          messages: removeChannelMessages(state.messages, action.payload.id),
+          currentChannelId: getCurrentChannelId(nextChannels, state.currentChannelId),
+          removeChannelStatus: 'idle',
+          removeChannelError: null,
+        };
+      })
+      .addCase(removeChannel.rejected, (state, action) => ({
+        ...state,
+        removeChannelStatus: 'idle',
+        removeChannelError: action.payload || 'remove-channel-failed',
       }));
   },
 });
 
 export const {
+  channelAdded,
+  channelRemoved,
+  channelRenamed,
   messageReceived,
   resetChat,
   setCurrentChannel,

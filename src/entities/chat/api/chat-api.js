@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
+  baseURL: '',
 });
 
 const buildRequestConfig = (token) => ({
@@ -30,5 +30,23 @@ export const postMessage = async ({ token, body, channelId, username }) => {
   return response.data;
 };
 
+export const postChannel = async ({ token, name }) => {
+  const requestConfig = buildRequestConfig(token);
+  const response = await api.post('/api/v1/channels', { name }, requestConfig);
+  return response.data;
+};
+
+export const patchChannel = async ({ token, channelId, name }) => {
+  const requestConfig = buildRequestConfig(token);
+  const response = await api.patch(`/api/v1/channels/${channelId}`, { name }, requestConfig);
+  return response.data;
+};
+
+export const deleteChannel = async ({ token, channelId }) => {
+  const requestConfig = buildRequestConfig(token);
+  const response = await api.delete(`/api/v1/channels/${channelId}`, requestConfig);
+  return response.data;
+};
+
 export const isUnauthorizedError = (error) =>
-  axios.isAxiosError(error) && error.response?.status === 401;
+  axios.isAxiosError(error) && error.response && error.response.status === 401;
