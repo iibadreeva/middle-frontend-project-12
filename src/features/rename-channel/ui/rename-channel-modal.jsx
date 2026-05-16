@@ -1,30 +1,15 @@
 import { useRef } from 'react';
 import { Formik } from 'formik';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
-import { renameChannel, selectChannels, selectRenameChannelStatus } from '@/entities/chat';
-import { addToast } from '@/shared/model/toasts';
-
-const getValidationSchema = (channels, channelId, t) =>
-  Yup.object({
-    name: Yup.string()
-      .trim()
-      .required(t('validation.required'))
-      .min(3, t('validation.channelNameLength'))
-      .max(20, t('validation.channelNameLength'))
-      .test(
-        'unique-channel-name',
-        t('validation.uniqueChannelName'),
-        (value) =>
-          !value ||
-          !channels.some(
-            (channel) =>
-              channel.id !== channelId && channel.name.toLowerCase() === value.trim().toLowerCase(),
-          ),
-      ),
-  });
+import { toast } from 'react-toastify';
+import {
+  createChannelNameValidationSchema,
+  renameChannel,
+  selectChannels,
+  selectRenameChannelStatus,
+} from '@/entities/chat';
+import { ChannelNameModal } from '@/shared/ui/channel-name-modal';
 
 const RenameChannelModal = ({ channel, show, onHide }) => {
   const dispatch = useDispatch();
@@ -41,16 +26,18 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
   return (
     <Formik
       initialValues={{ name: channel.name }}
-      validationSchema={getValidationSchema(channels, channel.id, t)}
+      validationSchema={createChannelNameValidationSchema({
+        channels,
+        excludedChannelId: channel.id,
+        t,
+      })}
       enableReinitialize
       onSubmit={async (values, { setStatus, setSubmitting }) => {
         setStatus(null);
 
         try {
           await dispatch(renameChannel({ channelId: channel.id, name: values.name })).unwrap();
-          dispatch(
-            addToast({ title: t('toasts.successTitle'), message: t('toasts.channelRenamed') }),
-          );
+          toast.success(t('toasts.channelRenamed'));
           onHide();
         } catch (error) {
           if (error !== 'unauthorized') {
@@ -74,60 +61,33 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
         const isUnchanged = values.name.trim() === channel.name.trim();
 
         return (
-          <Modal
+          <ChannelNameModal
             show={show}
-            onHide={() => {
-              if (!isSubmitting) {
-                onHide();
-              }
-            }}
+            title={t('channels.renameTitle')}
+            value={values.name}
+            status={status}
+            errors={errors.name}
+            touched={touched.name}
+            isSubmitting={isSubmitting}
+            isLoading={isLoading}
+            isSubmitDisabled={isUnchanged}
+            inputId="rename-channel-name"
+            inputName="name"
+            inputRef={inputRef}
+            inputAriaLabel={t('channels.channelNameAria')}
+            onHide={onHide}
             onEntered={() => {
               if (inputRef.current) {
                 inputRef.current.select();
               }
             }}
-            centered
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>{t('channels.renameTitle')}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {status && (
-                <Alert variant="danger" className="mb-3">
-                  {status}
-                </Alert>
-              )}
-              <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group controlId="rename-channel-name">
-                  <Form.Control
-                    ref={inputRef}
-                    id="rename-channel-name"
-                    name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    isInvalid={touched.name && Boolean(errors.name)}
-                    disabled={isSubmitting}
-                    autoComplete="off"
-                    aria-label={t('channels.channelNameAria')}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
-                </Form.Group>
-                <div className="d-flex justify-content-end gap-2 mt-3">
-                  <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
-                    {t('channels.cancel')}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting || isLoading || isUnchanged}
-                  >
-                    {isSubmitting || isLoading ? t('channels.submitting') : t('channels.submit')}
-                  </Button>
-                </div>
-              </Form>
-            </Modal.Body>
-          </Modal>
+            onBlur={handleBlur}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            cancelLabel={t('channels.cancel')}
+            submitLabel={t('channels.submit')}
+            submittingLabel={t('channels.submitting')}
+          />
         );
       }}
     </Formik>

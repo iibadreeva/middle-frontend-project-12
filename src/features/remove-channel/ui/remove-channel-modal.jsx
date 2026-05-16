@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { removeChannel, selectRemoveChannelStatus } from '@/entities/chat';
-import { addToast } from '@/shared/model/toasts';
 
 const RemoveChannelModal = ({ channel, show, onHide }) => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
 
     try {
       await dispatch(removeChannel(channel.id)).unwrap();
-      dispatch(addToast({ title: t('toasts.successTitle'), message: t('toasts.channelRemoved') }));
+      toast.success(t('toasts.channelRemoved'));
       onHide();
     } catch (requestError) {
       if (requestError !== 'unauthorized') {

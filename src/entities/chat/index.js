@@ -1,4 +1,5 @@
 export { connectChatSocket, disconnectChatSocket } from './api/chat-socket.js';
+export { default as createChannelNameValidationSchema } from './lib/validation.js';
 export {
   addNewChannel,
   channelAdded,

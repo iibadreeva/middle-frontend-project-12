@@ -2,10 +2,10 @@ import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ToastContainer } from 'react-toastify';
 import { selectIsAuthenticated } from '@/entities/session';
 import { useLogout } from '@/features/logout';
 import appRoutes from '@/shared/config/routes';
-import { AppToasts } from '@/shared/ui/app-toasts';
 
 const AppShell = ({ children }) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -34,7 +34,7 @@ const AppShell = ({ children }) => {
             </nav>
           </header>
           <main className="h-100">{children}</main>
-          <AppToasts />
+          <ToastContainer position="top-right" autoClose={3000} newestOnTop />
         </div>
       </div>
     </div>

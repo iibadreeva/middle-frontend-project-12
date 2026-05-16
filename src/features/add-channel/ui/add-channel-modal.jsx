@@ -1,27 +1,15 @@
 import { useRef } from 'react';
 import { Formik } from 'formik';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
-import { addNewChannel, selectAddChannelStatus, selectChannels } from '@/entities/chat';
-import { addToast } from '@/shared/model/toasts';
-
-const getValidationSchema = (channels, t) =>
-  Yup.object({
-    name: Yup.string()
-      .trim()
-      .required(t('validation.required'))
-      .min(3, t('validation.channelNameLength'))
-      .max(20, t('validation.channelNameLength'))
-      .test(
-        'unique-channel-name',
-        t('validation.uniqueChannelName'),
-        (value) =>
-          !value ||
-          !channels.some((channel) => channel.name.toLowerCase() === value.trim().toLowerCase()),
-      ),
-  });
+import { toast } from 'react-toastify';
+import {
+  addNewChannel,
+  createChannelNameValidationSchema,
+  selectAddChannelStatus,
+  selectChannels,
+} from '@/entities/chat';
+import { ChannelNameModal } from '@/shared/ui/channel-name-modal';
 
 const AddChannelModal = ({ show, onHide }) => {
   const dispatch = useDispatch();
@@ -38,15 +26,13 @@ const AddChannelModal = ({ show, onHide }) => {
   return (
     <Formik
       initialValues={{ name: '' }}
-      validationSchema={getValidationSchema(channels, t)}
+      validationSchema={createChannelNameValidationSchema({ channels, t })}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
         setStatus(null);
 
         try {
           await dispatch(addNewChannel(values.name)).unwrap();
-          dispatch(
-            addToast({ title: t('toasts.successTitle'), message: t('toasts.channelCreated') }),
-          );
+          toast.success(t('toasts.channelCreated'));
           onHide();
         } catch (error) {
           if (error !== 'unauthorized') {
@@ -67,56 +53,32 @@ const AddChannelModal = ({ show, onHide }) => {
         values,
         status,
       }) => (
-        <Modal
+        <ChannelNameModal
           show={show}
-          onHide={() => {
-            if (!isSubmitting) {
-              onHide();
-            }
-          }}
+          title={t('channels.addTitle')}
+          value={values.name}
+          status={status}
+          errors={errors.name}
+          touched={touched.name}
+          isSubmitting={isSubmitting}
+          isLoading={isLoading}
+          inputId="add-channel-name"
+          inputName="name"
+          inputRef={inputRef}
+          inputAriaLabel={t('channels.channelNameAria')}
+          onHide={onHide}
           onEntered={() => {
             if (inputRef.current) {
               inputRef.current.focus();
             }
           }}
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>{t('channels.addTitle')}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {status && (
-              <Alert variant="danger" className="mb-3">
-                {status}
-              </Alert>
-            )}
-            <Form noValidate onSubmit={handleSubmit}>
-              <Form.Group controlId="add-channel-name">
-                <Form.Control
-                  ref={inputRef}
-                  id="add-channel-name"
-                  name="name"
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isInvalid={touched.name && Boolean(errors.name)}
-                  disabled={isSubmitting}
-                  autoComplete="off"
-                  aria-label={t('channels.channelNameAria')}
-                />
-                <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
-              </Form.Group>
-              <div className="d-flex justify-content-end gap-2 mt-3">
-                <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
-                  {t('channels.cancel')}
-                </Button>
-                <Button variant="primary" type="submit" disabled={isSubmitting || isLoading}>
-                  {isSubmitting || isLoading ? t('channels.submitting') : t('channels.submit')}
-                </Button>
-              </div>
-            </Form>
-          </Modal.Body>
-        </Modal>
+          onBlur={handleBlur}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          cancelLabel={t('channels.cancel')}
+          submitLabel={t('channels.submit')}
+          submittingLabel={t('channels.submitting')}
+        />
       )}
     </Formik>
   );

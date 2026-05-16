@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import {
   selectConnectionError,
   selectCurrentChannelId,
@@ -20,6 +21,7 @@ const MessageForm = () => {
   const socketStatus = useSelector(selectSocketStatus);
   const connectionError = useSelector(selectConnectionError);
   const [body, setBody] = useState('');
+  const previousConnectionErrorRef = useRef(null);
 
   const trimmedBody = body.trim();
   const isSubmitDisabled = trimmedBody === '' || !currentChannelId || sendStatus === 'loading';
@@ -38,6 +40,18 @@ const MessageForm = () => {
       // Ошибка уже сохранена в store и показана в интерфейсе.
     }
   };
+
+  useEffect(() => {
+    if (connectionError && previousConnectionErrorRef.current !== connectionError) {
+      if (connectionError === 'connection-lost') {
+        toast.warn(t('errors.connectionLost'));
+      } else if (connectionError === 'connection-failed') {
+        toast.error(t('errors.connectionFailed'));
+      }
+    }
+
+    previousConnectionErrorRef.current = connectionError;
+  }, [connectionError, t]);
 
   return (
     <div>

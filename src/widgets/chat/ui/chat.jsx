@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { AddChannelModal } from '@/features/add-channel';
 import { RemoveChannelModal } from '@/features/remove-channel';
 import { RenameChannelModal } from '@/features/rename-channel';
@@ -16,6 +17,7 @@ const Chat = () => {
   const selectChannel = useSelectChannel();
   const { t } = useTranslation();
   const [modalState, setModalState] = useState({ type: null, channel: null });
+  const previousLoadErrorRef = useRef(null);
   const { channels, currentChannel, currentChannelId, currentMessages, fetchStatus, loadError } =
     useChat();
 
@@ -34,6 +36,16 @@ const Chat = () => {
   const openRemoveChannelModal = (channel) => {
     setModalState({ type: 'remove', channel });
   };
+
+  useEffect(() => {
+    if (fetchStatus === 'failed' && loadError && previousLoadErrorRef.current !== loadError) {
+      const message =
+        loadError === 'load-failed' ? t('errors.chatLoadFailed') : t('errors.chatLoadGeneric');
+      toast.error(message);
+    }
+
+    previousLoadErrorRef.current = fetchStatus === 'failed' ? loadError : null;
+  }, [fetchStatus, loadError, t]);
 
   const renderMessagesContent = () => {
     if (fetchStatus === 'loading') {
