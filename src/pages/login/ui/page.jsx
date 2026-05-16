@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LoginForm } from '@/features/auth-by-username';
+import appRoutes from '@/shared/config/routes';
 import { AuthLayout } from '@/widgets/auth-layout';
 import image from '../assets/login-image.jpg';
 
@@ -10,7 +11,7 @@ const LoginPage = () => (
     footer={(
       <>
         <span>Нет аккаунта? </span>
-        <Link to="/signup">Регистрация</Link>
+        <Link to={appRoutes.signup}>Регистрация</Link>
       </>
     )}
   >

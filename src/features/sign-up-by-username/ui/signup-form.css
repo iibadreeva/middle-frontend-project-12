@@ -1,0 +1,14 @@
+/* Плавность рамки и тени при фокусе; лейбл анимирует сам Bootstrap (.form-floating). */
+.signup-form .form-floating > .form-control {
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.signup-form .form-floating > label {
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    height 0.2s ease-in-out;
+}
