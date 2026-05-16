@@ -18,6 +18,8 @@ const initialState = {
 
 const resetChatType = 'chat/resetChat';
 
+// При невалидной сессии очищаем auth, localStorage и socket одновременно,
+// чтобы после logout/401 в store не возвращались запоздалые события.
 const clearSession = (dispatch) => {
   disconnectChatSocket();
   clearAuth();
@@ -25,6 +27,8 @@ const clearSession = (dispatch) => {
   dispatch({ type: resetChatType });
 };
 
+// Сообщение может прийти и из POST-ответа, и через socket broadcast,
+// поэтому добавляем его в store только если такого id еще нет.
 const addMessage = (messages, message) => {
   const hasMessage = messages.some((currentMessage) => currentMessage.id === message.id);
 
@@ -40,12 +44,14 @@ const getCurrentChannelId = (channels, currentChannelId) => {
     return null;
   }
 
+  // Если текущий канал валиден, сохраняем выбор пользователя.
   const hasCurrentChannel = channels.some((channel) => channel.id === currentChannelId);
 
   if (hasCurrentChannel) {
     return currentChannelId;
   }
 
+  // При первой загрузке стараемся открыть general, как требует задание.
   const generalChannel = channels.find((channel) => channel.name === 'general');
 
   if (generalChannel) {
@@ -90,6 +96,7 @@ export const fetchInitialChatData = createAsyncThunk(
     }
   },
   {
+    // Защищаемся от повторной инициализации, например из-за StrictMode.
     condition: (_, { getState }) => getState().chat.fetchStatus === 'idle',
   },
 );
@@ -141,6 +148,7 @@ const chatSlice = createSlice({
       ...state,
       currentChannelId: action.payload,
     }),
+    // Новые сообщения приходят из socket-подписки и попадают в общий список чата.
     messageReceived: (state, action) => ({
       ...state,
       messages: addMessage(state.messages, action.payload),
@@ -182,6 +190,8 @@ const chatSlice = createSlice({
         fetchStatus: action.payload === 'unauthorized' ? 'idle' : 'failed',
         loadError: action.payload || 'load-failed',
       }))
+      // Отправка сообщения отслеживается отдельно, чтобы не смешивать ее
+      // с первоначальной загрузкой каналов и сообщений.
       .addCase(sendMessage.pending, (state) => ({
         ...state,
         sendStatus: 'loading',

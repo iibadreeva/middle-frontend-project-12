@@ -25,12 +25,15 @@ const HomePage = () => {
   const fetchStatus = useSelector((state) => state.chat.fetchStatus);
   const loadError = useSelector((state) => state.chat.loadError);
 
+  // Инициализируем чат один раз после входа или восстановления сессии.
   useEffect(() => {
     if (isAuthenticated && fetchStatus === 'idle') {
       dispatch(fetchInitialChatData());
     }
   }, [dispatch, fetchStatus, isAuthenticated]);
 
+  // Держим socket-подписки рядом со страницей чата, чтобы при выходе со страницы
+  // или разлогине все listeners и соединение гарантированно очищались.
   useEffect(() => {
     if (!isAuthenticated || fetchStatus !== 'succeeded') {
       return undefined;
@@ -73,6 +76,7 @@ const HomePage = () => {
   const currentMessages = messages.filter((message) => message.channelId === currentChannelId);
 
   const renderMessagesContent = () => {
+    // Правая колонка переключается между загрузкой, ошибкой и лентой сообщений.
     if (fetchStatus === 'loading') {
       return (
         <div className="d-flex justify-content-center align-items-center h-100 text-muted">
