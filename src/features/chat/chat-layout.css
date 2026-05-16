@@ -1,0 +1,65 @@
+.chatPage {
+  height: 100%;
+}
+
+.chatCard {
+  height: calc(100vh - 110px);
+  min-height: 0;
+}
+
+.chatSidebar {
+  min-height: 0;
+  background-color: #f8f9fa;
+}
+
+.chatSidebarContent {
+  min-height: 0;
+}
+
+.chatMain {
+  min-height: 0;
+}
+
+.chatMessages {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.chatComposerForm {
+  background-color: #fff;
+  border-top: 1px solid #dee2e6;
+}
+
+.chatEmptyState {
+  height: 100%;
+}
+
+.chatSidebarHeader {
+  padding: 1.25rem 1rem 0.75rem;
+}
+
+.chatChannelsList {
+  padding: 0 0.5rem 1rem;
+}
+
+.chatChannelButton {
+  border-radius: 0;
+  font-weight: 500;
+}
+
+.chatHeader {
+  padding: 1rem 1.5rem 0.75rem;
+}
+
+.chatHeaderTitle {
+  line-height: 1.2;
+}
+
+.chatComposerControl {
+  overflow: hidden;
+}
+
+.chatComposerButton {
+  min-width: 44px;
+}
