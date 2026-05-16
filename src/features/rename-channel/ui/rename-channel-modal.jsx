@@ -2,20 +2,21 @@ import { useRef } from 'react';
 import { Formik } from 'formik';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { renameChannel, selectChannels, selectRenameChannelStatus } from '@/entities/chat';
 import { addToast } from '@/shared/model/toasts';
 
-const getValidationSchema = (channels, channelId) =>
+const getValidationSchema = (channels, channelId, t) =>
   Yup.object({
     name: Yup.string()
       .trim()
-      .required('Обязательное поле')
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
+      .required(t('validation.required'))
+      .min(3, t('validation.channelNameLength'))
+      .max(20, t('validation.channelNameLength'))
       .test(
         'unique-channel-name',
-        'Должно быть уникальным',
+        t('validation.uniqueChannelName'),
         (value) =>
           !value ||
           !channels.some(
@@ -27,6 +28,7 @@ const getValidationSchema = (channels, channelId) =>
 
 const RenameChannelModal = ({ channel, show, onHide }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const channels = useSelector(selectChannels);
   const renameChannelStatus = useSelector(selectRenameChannelStatus);
   const inputRef = useRef(null);
@@ -39,18 +41,20 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
   return (
     <Formik
       initialValues={{ name: channel.name }}
-      validationSchema={getValidationSchema(channels, channel.id)}
+      validationSchema={getValidationSchema(channels, channel.id, t)}
       enableReinitialize
       onSubmit={async (values, { setStatus, setSubmitting }) => {
         setStatus(null);
 
         try {
           await dispatch(renameChannel({ channelId: channel.id, name: values.name })).unwrap();
-          dispatch(addToast({ title: 'Успешно', message: 'Канал переименован' }));
+          dispatch(
+            addToast({ title: t('toasts.successTitle'), message: t('toasts.channelRenamed') }),
+          );
           onHide();
         } catch (error) {
           if (error !== 'unauthorized') {
-            setStatus('Не удалось переименовать канал. Попробуйте еще раз.');
+            setStatus(t('errors.renameChannelFailed'));
           }
         } finally {
           setSubmitting(false);
@@ -85,7 +89,7 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
             centered
           >
             <Modal.Header closeButton>
-              <Modal.Title>Переименовать канал</Modal.Title>
+              <Modal.Title>{t('channels.renameTitle')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {status && (
@@ -105,20 +109,20 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
                     isInvalid={touched.name && Boolean(errors.name)}
                     disabled={isSubmitting}
                     autoComplete="off"
-                    aria-label="Имя канала"
+                    aria-label={t('channels.channelNameAria')}
                   />
                   <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <div className="d-flex justify-content-end gap-2 mt-3">
                   <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
-                    Отменить
+                    {t('channels.cancel')}
                   </Button>
                   <Button
                     variant="primary"
                     type="submit"
                     disabled={isSubmitting || isLoading || isUnchanged}
                   >
-                    {isSubmitting || isLoading ? 'Отправка...' : 'Отправить'}
+                    {isSubmitting || isLoading ? t('channels.submitting') : t('channels.submit')}
                   </Button>
                 </div>
               </Form>

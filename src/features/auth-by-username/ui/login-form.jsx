@@ -1,20 +1,21 @@
 import { Formik } from 'formik';
 import { Alert, Button, Form, Stack } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { FormField } from '@/shared/ui/form-field';
 import useLogin from '../model/use-login.js';
 import './login-form.css';
 
-const validationSchema = Yup.object({
-  username: Yup.string()
-    .required('Обязательное поле')
-    .min(3, 'От 3 до 20 символов')
-    .max(20, 'От 3 до 20 символов'),
-  password: Yup.string().required('Обязательное поле'),
-});
-
 const LoginForm = () => {
   const login = useLogin();
+  const { t } = useTranslation();
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .required(t('validation.required'))
+      .min(3, t('validation.usernameLength'))
+      .max(20, t('validation.usernameLength')),
+    password: Yup.string().required(t('validation.required')),
+  });
 
   return (
     <Formik
@@ -34,7 +35,7 @@ const LoginForm = () => {
     >
       {({ handleSubmit, status, isSubmitting }) => (
         <Form noValidate onSubmit={handleSubmit} className="login-form mx-auto w-100 px-sm-2">
-          <h2 className="text-center mb-4">Войти</h2>
+          <h2 className="text-center mb-4">{t('auth.loginTitle')}</h2>
           <Stack gap={3}>
             {status && (
               <Alert variant="danger" className="mb-0">
@@ -45,8 +46,8 @@ const LoginForm = () => {
               name="username"
               id="login-username"
               type="text"
-              label="Ваш ник"
-              placeholder="Ваш ник"
+              label={t('auth.loginUsernameLabel')}
+              placeholder={t('auth.loginUsernamePlaceholder')}
               autoComplete="username"
               disabled={isSubmitting}
             />
@@ -54,8 +55,8 @@ const LoginForm = () => {
               name="password"
               id="login-password"
               type="password"
-              label="Пароль"
-              placeholder="Пароль"
+              label={t('auth.passwordLabel')}
+              placeholder={t('auth.passwordPlaceholder')}
               autoComplete="current-password"
               disabled={isSubmitting}
             />
@@ -66,7 +67,7 @@ const LoginForm = () => {
               className="w-100 mb-3 "
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Вход...' : 'Войти'}
+              {isSubmitting ? t('auth.loginSubmitting') : t('auth.loginSubmit')}
             </Button>
           </Stack>
         </Form>

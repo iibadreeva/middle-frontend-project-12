@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   selectConnectionError,
   selectCurrentChannelId,
@@ -12,6 +13,7 @@ import {
 
 const MessageForm = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const currentChannelId = useSelector(selectCurrentChannelId);
   const sendStatus = useSelector(selectSendStatus);
   const sendError = useSelector(selectSendError);
@@ -41,14 +43,14 @@ const MessageForm = () => {
     <div>
       {(socketStatus === 'disconnected' || socketStatus === 'error') && connectionError && (
         <Alert variant="warning" className="mb-3 py-2">
-          {connectionError}
+          {connectionError === 'connection-lost'
+            ? t('errors.connectionLost')
+            : t('errors.connectionFailed')}
         </Alert>
       )}
       {sendError && sendError !== 'unauthorized' && (
         <Alert variant="danger" className="mb-3 py-2">
-          {sendError === 'send-failed'
-            ? 'Не удалось отправить сообщение. Попробуйте еще раз.'
-            : 'Сообщение не отправлено.'}
+          {sendError === 'send-failed' ? t('errors.messageSendFailed') : t('errors.messageNotSent')}
         </Alert>
       )}
       <form onSubmit={handleSubmit}>
@@ -56,8 +58,8 @@ const MessageForm = () => {
           <input
             type="text"
             className="form-control border-0 shadow-none"
-            placeholder="Введите сообщение..."
-            aria-label="Новое сообщение"
+            placeholder={t('chat.composerPlaceholder')}
+            aria-label={t('chat.composerAria')}
             value={body}
             onChange={(event) => setBody(event.target.value)}
             disabled={!currentChannelId || sendStatus === 'loading'}
@@ -84,7 +86,7 @@ const MessageForm = () => {
                     d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"
                   />
                 </svg>
-                <span className="visually-hidden">Отправить</span>
+                <span className="visually-hidden">{t('chat.send')}</span>
               </>
             )}
           </button>

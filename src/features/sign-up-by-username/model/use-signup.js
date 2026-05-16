@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { saveSession, setCredentials } from '@/entities/session';
 import appRoutes from '@/shared/config/routes';
@@ -7,6 +8,7 @@ import appRoutes from '@/shared/config/routes';
 const useSignup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const signup = async ({ username, password }) => {
     try {
@@ -21,10 +23,10 @@ const useSignup = () => {
       navigate(appRoutes.home, { replace: true });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response && error.response.status === 409) {
-        throw new Error('Такой пользователь уже существует');
+        throw new Error(t('errors.signupUserExists'));
       }
 
-      throw new Error('Не удалось выполнить регистрацию. Попробуйте еще раз.');
+      throw new Error(t('errors.signupFailed'));
     }
   };
 

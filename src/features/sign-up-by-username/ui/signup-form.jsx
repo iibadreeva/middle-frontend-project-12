@@ -1,25 +1,24 @@
 import { Formik } from 'formik';
 import { Alert, Button, Form, Stack } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { FormField } from '@/shared/ui/form-field';
 import useSignup from '../model/use-signup.js';
 import './signup-form.css';
 
-const validationSchema = Yup.object({
-  username: Yup.string()
-    .required('Обязательное поле')
-    .min(3, 'От 3 до 20 символов')
-    .max(20, 'От 3 до 20 символов'),
-  password: Yup.string()
-    .required('Обязательное поле')
-    .min(6, 'Не менее 6 символов'),
-  confirmPassword: Yup.string()
-    .required('Обязательное поле')
-    .oneOf([Yup.ref('password')], 'Пароли должны совпадать'),
-});
-
 const SignupForm = () => {
   const signup = useSignup();
+  const { t } = useTranslation();
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .required(t('validation.required'))
+      .min(3, t('validation.usernameLength'))
+      .max(20, t('validation.usernameLength')),
+    password: Yup.string().required(t('validation.required')).min(6, t('validation.passwordMin')),
+    confirmPassword: Yup.string()
+      .required(t('validation.required'))
+      .oneOf([Yup.ref('password')], t('validation.passwordsMatch')),
+  });
 
   return (
     <Formik
@@ -39,7 +38,7 @@ const SignupForm = () => {
     >
       {({ handleSubmit, status, isSubmitting }) => (
         <Form noValidate onSubmit={handleSubmit} className="signup-form mx-auto w-100 px-sm-2">
-          <h2 className="text-center mb-4">Регистрация</h2>
+          <h2 className="text-center mb-4">{t('auth.signupTitle')}</h2>
           <Stack gap={3}>
             {status && (
               <Alert variant="danger" className="mb-0">
@@ -50,8 +49,8 @@ const SignupForm = () => {
               name="username"
               id="signup-username"
               type="text"
-              label="Имя пользователя"
-              placeholder="Имя пользователя"
+              label={t('auth.signupUsernameLabel')}
+              placeholder={t('auth.signupUsernamePlaceholder')}
               autoComplete="username"
               disabled={isSubmitting}
               autoFocus
@@ -60,8 +59,8 @@ const SignupForm = () => {
               name="password"
               id="signup-password"
               type="password"
-              label="Пароль"
-              placeholder="Пароль"
+              label={t('auth.passwordLabel')}
+              placeholder={t('auth.passwordPlaceholder')}
               autoComplete="new-password"
               disabled={isSubmitting}
             />
@@ -69,8 +68,8 @@ const SignupForm = () => {
               name="confirmPassword"
               id="signup-confirm-password"
               type="password"
-              label="Подтвердите пароль"
-              placeholder="Подтвердите пароль"
+              label={t('auth.confirmPasswordLabel')}
+              placeholder={t('auth.confirmPasswordPlaceholder')}
               autoComplete="new-password"
               disabled={isSubmitting}
             />
@@ -81,7 +80,7 @@ const SignupForm = () => {
               className="w-100 mb-3"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
+              {isSubmitting ? t('auth.signupSubmitting') : t('auth.signupSubmit')}
             </Button>
           </Stack>
         </Form>

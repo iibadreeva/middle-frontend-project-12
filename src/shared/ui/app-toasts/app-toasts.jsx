@@ -1,10 +1,12 @@
 import { Toast, ToastContainer } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { removeToast, selectToasts } from '@/shared/model/toasts';
 
 const AppToasts = () => {
   const dispatch = useDispatch();
   const toasts = useSelector(selectToasts);
+  const { t } = useTranslation();
 
   return (
     <ToastContainer position="top-end" className="p-3 position-fixed top-0 end-0">
@@ -19,7 +21,7 @@ const AppToasts = () => {
           }`}
         >
           <Toast.Header closeButton>
-            <strong className="me-auto">{toast.title}</strong>
+            <strong className="me-auto">{toast.title || t('toasts.defaultTitle')}</strong>
           </Toast.Header>
           <Toast.Body>{toast.message}</Toast.Body>
         </Toast>

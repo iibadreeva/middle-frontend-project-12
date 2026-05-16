@@ -253,12 +253,12 @@ const chatSlice = createSlice({
     socketDisconnected: (state) => ({
       ...state,
       socketStatus: 'disconnected',
-      connectionError: 'Соединение потеряно. Пытаемся переподключиться.',
+      connectionError: 'connection-lost',
     }),
     socketErrored: (state) => ({
       ...state,
       socketStatus: 'error',
-      connectionError: 'Не удалось подключиться к серверу сообщений.',
+      connectionError: 'connection-failed',
     }),
     resetChat: () => initialState,
   },

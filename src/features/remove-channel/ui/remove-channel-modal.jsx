@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { removeChannel, selectRemoveChannelStatus } from '@/entities/chat';
 import { addToast } from '@/shared/model/toasts';
 
 const RemoveChannelModal = ({ channel, show, onHide }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const removeChannelStatus = useSelector(selectRemoveChannelStatus);
   const [error, setError] = useState(null);
   const isLoading = removeChannelStatus === 'loading';
@@ -19,11 +21,11 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
 
     try {
       await dispatch(removeChannel(channel.id)).unwrap();
-      dispatch(addToast({ title: 'Успешно', message: 'Канал удалён' }));
+      dispatch(addToast({ title: t('toasts.successTitle'), message: t('toasts.channelRemoved') }));
       onHide();
     } catch (requestError) {
       if (requestError !== 'unauthorized') {
-        setError('Не удалось удалить канал. Попробуйте еще раз.');
+        setError(t('errors.removeChannelFailed'));
       }
     }
   };
@@ -40,7 +42,7 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>Удалить канал</Modal.Title>
+        <Modal.Title>{t('channels.removeTitle')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {error && (
@@ -48,7 +50,7 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
             {error}
           </Alert>
         )}
-        <p className="mb-0">Уверены?</p>
+        <p className="mb-0">{t('channels.confirmRemove')}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -59,10 +61,10 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
           }}
           disabled={isLoading}
         >
-          Отменить
+          {t('channels.cancel')}
         </Button>
         <Button variant="danger" onClick={handleRemove} disabled={isLoading}>
-          {isLoading ? 'Удаление...' : 'Удалить'}
+          {isLoading ? t('channels.removing') : t('channels.remove')}
         </Button>
       </Modal.Footer>
     </Modal>

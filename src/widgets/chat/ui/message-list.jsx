@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MessageList = ({ messages }) => {
   const messagesEndRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -12,7 +14,7 @@ const MessageList = ({ messages }) => {
   if (messages.length === 0) {
     return (
       <div className="d-flex justify-content-center align-items-center h-100 text-muted chatEmptyState">
-        Пока нет сообщений
+        {t('chat.empty')}
       </div>
     );
   }

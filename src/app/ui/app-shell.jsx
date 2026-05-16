@@ -1,6 +1,7 @@
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { selectIsAuthenticated } from '@/entities/session';
 import { useLogout } from '@/features/logout';
 import appRoutes from '@/shared/config/routes';
@@ -9,6 +10,7 @@ import { AppToasts } from '@/shared/ui/app-toasts';
 const AppShell = ({ children }) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const logout = useLogout();
+  const { t } = useTranslation();
 
   return (
     <div className="h-100 bg-light">
@@ -17,15 +19,15 @@ const AppShell = ({ children }) => {
           <header>
             <nav
               className="shadow-sm navbar navbar-expand-lg navbar-light bg-white"
-              aria-label="Основная навигация"
+              aria-label={t('app.navigation')}
             >
               <div className="container">
                 <NavLink to={appRoutes.home} end className="navbar-brand">
-                  Hexlet Chat
+                  {t('app.brand')}
                 </NavLink>
                 {isAuthenticated && (
                   <Button variant="primary" onClick={logout}>
-                    Выйти
+                    {t('app.logout')}
                   </Button>
                 )}
               </div>

@@ -10,7 +10,7 @@ const toastsSlice = createSlice({
       reducer: (state, action) => {
         state.push(action.payload);
       },
-      prepare: ({ message, title = 'Уведомление', variant = 'success' }) => ({
+      prepare: ({ message, title = null, variant = 'success' }) => ({
         payload: {
           id: crypto.randomUUID(),
           message,

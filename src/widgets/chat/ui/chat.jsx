@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { AddChannelModal } from '@/features/add-channel';
 import { RemoveChannelModal } from '@/features/remove-channel';
 import { RenameChannelModal } from '@/features/rename-channel';
@@ -13,6 +14,7 @@ import MessageList from './message-list.jsx';
 
 const Chat = () => {
   const selectChannel = useSelectChannel();
+  const { t } = useTranslation();
   const [modalState, setModalState] = useState({ type: null, channel: null });
   const { channels, currentChannel, currentChannelId, currentMessages, fetchStatus, loadError } =
     useChat();
@@ -38,7 +40,7 @@ const Chat = () => {
       return (
         <div className="d-flex justify-content-center align-items-center h-100 text-muted">
           <Spinner animation="border" size="sm" className="me-2" />
-          <span>Загрузка данных...</span>
+          <span>{t('chat.loading')}</span>
         </div>
       );
     }
@@ -47,9 +49,7 @@ const Chat = () => {
       return (
         <div className="p-4">
           <Alert variant="danger" className="mb-0">
-            {loadError === 'load-failed'
-              ? 'Не удалось загрузить данные чата.'
-              : 'Произошла ошибка при загрузке чата.'}
+            {loadError === 'load-failed' ? t('errors.chatLoadFailed') : t('errors.chatLoadGeneric')}
           </Alert>
         </div>
       );

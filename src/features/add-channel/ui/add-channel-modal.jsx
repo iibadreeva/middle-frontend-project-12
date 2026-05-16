@@ -2,20 +2,21 @@ import { useRef } from 'react';
 import { Formik } from 'formik';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { addNewChannel, selectAddChannelStatus, selectChannels } from '@/entities/chat';
 import { addToast } from '@/shared/model/toasts';
 
-const getValidationSchema = (channels) =>
+const getValidationSchema = (channels, t) =>
   Yup.object({
     name: Yup.string()
       .trim()
-      .required('Обязательное поле')
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
+      .required(t('validation.required'))
+      .min(3, t('validation.channelNameLength'))
+      .max(20, t('validation.channelNameLength'))
       .test(
         'unique-channel-name',
-        'Должно быть уникальным',
+        t('validation.uniqueChannelName'),
         (value) =>
           !value ||
           !channels.some((channel) => channel.name.toLowerCase() === value.trim().toLowerCase()),
@@ -24,6 +25,7 @@ const getValidationSchema = (channels) =>
 
 const AddChannelModal = ({ show, onHide }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const channels = useSelector(selectChannels);
   const addChannelStatus = useSelector(selectAddChannelStatus);
   const inputRef = useRef(null);
@@ -36,17 +38,19 @@ const AddChannelModal = ({ show, onHide }) => {
   return (
     <Formik
       initialValues={{ name: '' }}
-      validationSchema={getValidationSchema(channels)}
+      validationSchema={getValidationSchema(channels, t)}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
         setStatus(null);
 
         try {
           await dispatch(addNewChannel(values.name)).unwrap();
-          dispatch(addToast({ title: 'Успешно', message: 'Канал создан' }));
+          dispatch(
+            addToast({ title: t('toasts.successTitle'), message: t('toasts.channelCreated') }),
+          );
           onHide();
         } catch (error) {
           if (error !== 'unauthorized') {
-            setStatus('Не удалось создать канал. Попробуйте еще раз.');
+            setStatus(t('errors.addChannelFailed'));
           }
         } finally {
           setSubmitting(false);
@@ -78,7 +82,7 @@ const AddChannelModal = ({ show, onHide }) => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Добавить канал</Modal.Title>
+            <Modal.Title>{t('channels.addTitle')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {status && (
@@ -98,16 +102,16 @@ const AddChannelModal = ({ show, onHide }) => {
                   isInvalid={touched.name && Boolean(errors.name)}
                   disabled={isSubmitting}
                   autoComplete="off"
-                  aria-label="Имя канала"
+                  aria-label={t('channels.channelNameAria')}
                 />
                 <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
               </Form.Group>
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
-                  Отменить
+                  {t('channels.cancel')}
                 </Button>
                 <Button variant="primary" type="submit" disabled={isSubmitting || isLoading}>
-                  {isSubmitting || isLoading ? 'Отправка...' : 'Отправить'}
+                  {isSubmitting || isLoading ? t('channels.submitting') : t('channels.submit')}
                 </Button>
               </div>
             </Form>
