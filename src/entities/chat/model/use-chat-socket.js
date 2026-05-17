@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { logRollbarError, logRollbarWarning } from '@/shared/lib/rollbar.js';
 import { connectChatSocket, disconnectChatSocket } from '../api/chat-socket.js';
 import {
   channelAdded,
@@ -36,10 +37,29 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
     const handleConnect = () => {
       dispatch(socketConnected());
     };
-    const handleDisconnect = () => {
+    const handleDisconnect = (reason) => {
+      if (reason !== 'io client disconnect') {
+        logRollbarWarning({
+          message: 'Chat socket disconnected unexpectedly',
+          extra: {
+            feature: 'chat',
+            operation: 'socketDisconnect',
+            reason,
+          },
+        });
+      }
+
       dispatch(socketDisconnected());
     };
-    const handleConnectError = () => {
+    const handleConnectError = (error) => {
+      logRollbarError({
+        message: 'Chat socket connection failed',
+        error,
+        extra: {
+          feature: 'chat',
+          operation: 'socketConnectError',
+        },
+      });
       dispatch(socketErrored());
     };
 

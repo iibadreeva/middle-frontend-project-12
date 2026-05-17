@@ -84,6 +84,13 @@ const en = {
     channelRemoved: 'Channel deleted',
     messageSanitized: 'The message contains profanity and will be sanitized before sending',
   },
+  rollbar: {
+    fallbackTitle: 'Something went wrong.',
+    fallbackDescription:
+      "We've already received the error details. Try reloading the page or returning to the home screen.",
+    reloadPage: 'Reload page',
+    goHome: 'Go home',
+  },
   notFound: {
     alt: 'Page not found',
     title: 'Page not found',

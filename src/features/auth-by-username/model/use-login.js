@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { saveSession, setCredentials } from '@/entities/session';
 import appRoutes from '@/shared/config/routes';
+import { logRollbarError } from '@/shared/lib/rollbar.js';
 
 const useLogin = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,15 @@ const useLogin = () => {
         throw new Error(t('errors.loginInvalidCredentials'));
       }
 
+      logRollbarError({
+        message: 'Login request failed',
+        error,
+        extra: {
+          feature: 'auth',
+          operation: 'login',
+          username: values.username,
+        },
+      });
       throw new Error(t('errors.loginFailed'));
     }
   };

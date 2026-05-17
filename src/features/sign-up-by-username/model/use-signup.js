@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { saveSession, setCredentials } from '@/entities/session';
 import appRoutes from '@/shared/config/routes';
+import { logRollbarError } from '@/shared/lib/rollbar.js';
 
 const useSignup = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,15 @@ const useSignup = () => {
         throw new Error(t('errors.signupUserExists'));
       }
 
+      logRollbarError({
+        message: 'Signup request failed',
+        error,
+        extra: {
+          feature: 'auth',
+          operation: 'signup',
+          username,
+        },
+      });
       throw new Error(t('errors.signupFailed'));
     }
   };

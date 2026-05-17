@@ -8,6 +8,7 @@ import {
   postMessage,
 } from '../api/chat-api.js';
 import { sanitizeMessageText } from '../lib/profanity.js';
+import { logRollbarError } from '@/shared/lib/rollbar.js';
 
 const initialState = {
   channels: [],
@@ -43,6 +44,17 @@ const sanitizeMessage = (message) => ({
 });
 
 const sanitizeMessages = (messages) => messages.map(sanitizeMessage);
+
+const logChatAsyncError = ({ error, extra = {}, operation }) =>
+  logRollbarError({
+    message: `Chat operation failed: ${operation}`,
+    error,
+    extra: {
+      feature: 'chat',
+      operation,
+      ...extra,
+    },
+  });
 
 const addChannel = (channels, channel) => {
   const hasChannel = channels.some((currentChannel) => currentChannel.id === channel.id);
@@ -103,6 +115,7 @@ export const fetchInitialChatData = createAsyncThunk(
         return rejectWithValue('unauthorized');
       }
 
+      logChatAsyncError({ error, operation: 'fetchInitialChatData' });
       return rejectWithValue('load-failed');
     }
   },
@@ -138,6 +151,11 @@ export const sendMessage = createAsyncThunk(
         return rejectWithValue('unauthorized');
       }
 
+      logChatAsyncError({
+        error,
+        operation: 'sendMessage',
+        extra: { channelId: currentChannelId, username },
+      });
       return rejectWithValue('send-failed');
     }
   },
@@ -165,6 +183,10 @@ export const addNewChannel = createAsyncThunk(
         return rejectWithValue('unauthorized');
       }
 
+      logChatAsyncError({
+        error,
+        operation: 'addNewChannel',
+      });
       return rejectWithValue('add-channel-failed');
     }
   },
@@ -193,6 +215,11 @@ export const renameChannel = createAsyncThunk(
         return rejectWithValue('unauthorized');
       }
 
+      logChatAsyncError({
+        error,
+        operation: 'renameChannel',
+        extra: { channelId },
+      });
       return rejectWithValue('rename-channel-failed');
     }
   },
@@ -219,6 +246,11 @@ export const removeChannel = createAsyncThunk(
         return rejectWithValue('unauthorized');
       }
 
+      logChatAsyncError({
+        error,
+        operation: 'removeChannel',
+        extra: { channelId },
+      });
       return rejectWithValue('remove-channel-failed');
     }
   },

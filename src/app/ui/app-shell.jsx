@@ -6,6 +6,8 @@ import { ToastContainer } from 'react-toastify';
 import { selectIsAuthenticated } from '@/entities/session';
 import { useLogout } from '@/features/logout';
 import appRoutes from '@/shared/config/routes';
+import { isRollbarEnabled } from '@/shared/lib/rollbar.js';
+import RollbarSessionSync from '@/app/providers/rollbar/ui/rollbar-session-sync.jsx';
 
 const AppShell = ({ children }) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -14,6 +16,7 @@ const AppShell = ({ children }) => {
 
   return (
     <div className="h-100 bg-light">
+      {isRollbarEnabled && <RollbarSessionSync />}
       <div className="h-100">
         <div className="d-flex flex-column h-100">
           <header>
