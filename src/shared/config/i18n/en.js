@@ -12,7 +12,7 @@ const en = {
     passwordPlaceholder: 'Password',
     loginSubmit: 'Log in',
     loginSubmitting: 'Logging in...',
-    noAccount: "Don't have an account?",
+    noAccount: 'Don\'t have an account?',
     signupLink: 'Sign up',
     loginImageAlt: 'Log in',
     signupTitle: 'Sign up',
@@ -87,7 +87,7 @@ const en = {
   rollbar: {
     fallbackTitle: 'Something went wrong.',
     fallbackDescription:
-      "We've already received the error details. Try reloading the page or returning to the home screen.",
+      'We\'ve already received the error details. Try reloading the page or returning to the home screen.',
     reloadPage: 'Reload page',
     goHome: 'Go home',
   },
@@ -97,6 +97,6 @@ const en = {
     descriptionPrefix: 'But you can go',
     homeLink: 'Home',
   },
-};
+}
 
-export default en;
+export default en

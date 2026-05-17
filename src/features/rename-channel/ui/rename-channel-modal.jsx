@@ -1,26 +1,26 @@
-import { useRef } from 'react';
-import { Formik } from 'formik';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+import { useRef } from 'react'
+import { Formik } from 'formik'
+import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 import {
   createChannelNameValidationSchema,
   renameChannel,
   selectChannels,
   selectRenameChannelStatus,
-} from '@/entities/chat';
-import { ChannelNameModal } from '@/shared/ui/channel-name-modal';
+} from '@/entities/chat'
+import { ChannelNameModal } from '@/shared/ui/channel-name-modal'
 
 const RenameChannelModal = ({ channel, show, onHide }) => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const channels = useSelector(selectChannels);
-  const renameChannelStatus = useSelector(selectRenameChannelStatus);
-  const inputRef = useRef(null);
-  const isLoading = renameChannelStatus === 'loading';
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const channels = useSelector(selectChannels)
+  const renameChannelStatus = useSelector(selectRenameChannelStatus)
+  const inputRef = useRef(null)
+  const isLoading = renameChannelStatus === 'loading'
 
   if (!show || !channel) {
-    return null;
+    return null
   }
 
   return (
@@ -33,18 +33,18 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
       })}
       enableReinitialize
       onSubmit={async (values, { setStatus, setSubmitting }) => {
-        setStatus(null);
+        setStatus(null)
 
         try {
-          await dispatch(renameChannel({ channelId: channel.id, name: values.name })).unwrap();
-          toast.success(t('toasts.channelRenamed'));
-          onHide();
+          await dispatch(renameChannel({ channelId: channel.id, name: values.name })).unwrap()
+          toast.success(t('toasts.channelRenamed'))
+          onHide()
         } catch (error) {
           if (error !== 'unauthorized') {
-            setStatus(t('errors.renameChannelFailed'));
+            setStatus(t('errors.renameChannelFailed'))
           }
         } finally {
-          setSubmitting(false);
+          setSubmitting(false)
         }
       }}
     >
@@ -58,7 +58,7 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
         values,
         status,
       }) => {
-        const isUnchanged = values.name.trim() === channel.name.trim();
+        const isUnchanged = values.name.trim() === channel.name.trim()
 
         return (
           <ChannelNameModal
@@ -78,7 +78,7 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
             onHide={onHide}
             onEntered={() => {
               if (inputRef.current) {
-                inputRef.current.select();
+                inputRef.current.select()
               }
             }}
             onBlur={handleBlur}
@@ -88,10 +88,10 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
             submitLabel={t('channels.submit')}
             submittingLabel={t('channels.submitting')}
           />
-        );
+        )
       }}
     </Formik>
-  );
-};
+  )
+}
 
-export default RenameChannelModal;
+export default RenameChannelModal

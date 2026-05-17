@@ -1,6 +1,6 @@
-export { connectChatSocket, disconnectChatSocket } from './api/chat-socket.js';
-export { hasProfanity, sanitizeChannelName, sanitizeMessageText } from './lib/profanity.js';
-export { default as createChannelNameValidationSchema } from './lib/validation.js';
+export { connectChatSocket, disconnectChatSocket } from './api/chat-socket.js'
+export { hasProfanity, sanitizeChannelName, sanitizeMessageText } from './lib/profanity.js'
+export { default as createChannelNameValidationSchema } from './lib/validation.js'
 export {
   addNewChannel,
   channelAdded,
@@ -17,7 +17,7 @@ export {
   socketConnected,
   socketDisconnected,
   socketErrored,
-} from './model/slice.js';
+} from './model/slice.js'
 export {
   selectAddChannelError,
   selectAddChannelStatus,
@@ -38,6 +38,6 @@ export {
   selectSendError,
   selectSendStatus,
   selectSocketStatus,
-} from './model/selectors.js';
-export { default as useChatBootstrap } from './model/use-chat-bootstrap.js';
-export { default as useChatSocket } from './model/use-chat-socket.js';
+} from './model/selectors.js'
+export { default as useChatBootstrap } from './model/use-chat-bootstrap.js'
+export { default as useChatSocket } from './model/use-chat-socket.js'

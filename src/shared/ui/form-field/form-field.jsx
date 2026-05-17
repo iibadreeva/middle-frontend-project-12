@@ -1,5 +1,5 @@
-import { Field } from 'formik';
-import { Form } from 'react-bootstrap';
+import { Field } from 'formik'
+import { Form } from 'react-bootstrap'
 
 const FormField = ({
   name,
@@ -33,6 +33,6 @@ const FormField = ({
       </div>
     )}
   </Field>
-);
+)
 
-export default FormField;
+export default FormField

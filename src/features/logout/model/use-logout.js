@@ -1,23 +1,23 @@
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useCallback } from 'react'
+import { useDispatch } from 'react-redux'
 import {
   clearSession,
   clearCredentials,
-} from '@/entities/session';
+} from '@/entities/session'
 import {
   disconnectChatSocket,
   resetChat,
-} from '@/entities/chat';
+} from '@/entities/chat'
 
 const useLogout = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   return useCallback(() => {
-    disconnectChatSocket();
-    clearSession();
-    dispatch(clearCredentials());
-    dispatch(resetChat());
-  }, [dispatch]);
-};
+    disconnectChatSocket()
+    clearSession()
+    dispatch(clearCredentials())
+    dispatch(resetChat())
+  }, [dispatch])
+}
 
-export default useLogout;
+export default useLogout

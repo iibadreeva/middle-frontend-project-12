@@ -98,6 +98,6 @@ const ru = {
     descriptionPrefix: 'Но вы можете перейти',
     homeLink: 'На главную',
   },
-};
+}
 
-export default ru;
+export default ru

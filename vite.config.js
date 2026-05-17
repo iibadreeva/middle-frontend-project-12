@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { fileURLToPath, URL } from 'node:url'
+import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -9,13 +9,16 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      __ROLLBAR_ACCESS_TOKEN__: JSON.stringify(env.VITE_ROLLBAR_ACCESS_TOKEN ?? ''),
-      __ROLLBAR_ENVIRONMENT__: JSON.stringify(env.VITE_APP_ENV ?? mode),
-      __ROLLBAR_CODE_VERSION__: JSON.stringify(env.VITE_GIT_SHA ?? ''),
+      __ROLLBAR_ACCESS_TOKEN__:
+        JSON.stringify(typeof env.VITE_ROLLBAR_ACCESS_TOKEN === 'undefined' ? '' : env.VITE_ROLLBAR_ACCESS_TOKEN),
+      __ROLLBAR_ENVIRONMENT__:
+        JSON.stringify(typeof env.VITE_APP_ENV === 'undefined' ? mode : env.VITE_APP_ENV),
+      __ROLLBAR_CODE_VERSION__:
+        JSON.stringify(typeof env.VITE_GIT_SHA === 'undefined' ? '' : env.VITE_GIT_SHA),
     },
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@': path.resolve(process.cwd(), 'src'),
       },
     },
     server: {

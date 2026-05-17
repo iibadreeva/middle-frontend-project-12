@@ -16,7 +16,7 @@ const MessageList = ({ messages }) => {
       <div className="d-flex justify-content-center align-items-center h-100 text-muted chatEmptyState">
         {t('chat.empty')}
       </div>
-    );
+    )
   }
 
   return (

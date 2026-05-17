@@ -1,1 +1,1 @@
-export { default as MessageForm } from './ui/message-form.jsx';
+export { default as MessageForm } from './ui/message-form.jsx'

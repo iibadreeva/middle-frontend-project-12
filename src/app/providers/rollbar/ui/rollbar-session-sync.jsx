@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { selectSession } from '@/entities/session';
-import { configureRollbarPerson } from '@/shared/lib/rollbar.js';
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { selectSession } from '@/entities/session'
+import { configureRollbarPerson } from '@/shared/lib/rollbar.js'
 
 const RollbarSessionSync = () => {
-  const session = useSelector(selectSession);
+  const session = useSelector(selectSession)
 
   useEffect(() => {
-    configureRollbarPerson(session);
-  }, [session]);
+    configureRollbarPerson(session)
+  }, [session])
 
-  return null;
-};
+  return null
+}
 
-export default RollbarSessionSync;
+export default RollbarSessionSync

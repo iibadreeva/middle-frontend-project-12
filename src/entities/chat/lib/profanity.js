@@ -1,29 +1,31 @@
-import filter from 'leo-profanity';
+import filter from 'leo-profanity'
 
 const getActiveDictionaries = () => {
-  const dictionaryNames = ['en'];
+  const dictionaryNames = ['en']
 
   if ('ru' in filter.wordDictionary) {
-    dictionaryNames.push('ru');
+    dictionaryNames.push('ru')
   }
 
-  return dictionaryNames;
-};
+  return dictionaryNames
+}
 
 const initializeFilter = () => {
   // Объединяем словари, чтобы фильтр ловил и русскую, и английскую брань.
   const mergedWords = Array.from(
-    new Set(getActiveDictionaries().flatMap((dictionaryName) => filter.getDictionary(dictionaryName))),
-  );
+    new Set(
+      getActiveDictionaries().flatMap(dictionaryName => filter.getDictionary(dictionaryName)),
+    ),
+  )
 
-  filter.clearList();
-  filter.add(mergedWords);
-};
+  filter.clearList()
+  filter.add(mergedWords)
+}
 
-initializeFilter();
+initializeFilter()
 
-export const sanitizeMessageText = (text) => filter.clean(text);
+export const sanitizeMessageText = text => filter.clean(text)
 
-export const sanitizeChannelName = (text) => filter.clean(text);
+export const sanitizeChannelName = text => filter.clean(text)
 
-export const hasProfanity = (text) => filter.check(text);
+export const hasProfanity = text => filter.check(text)

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+import { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 import {
   hasProfanity,
   selectConnectionError,
@@ -11,52 +11,52 @@ import {
   selectSendStatus,
   selectSocketStatus,
   sendMessage,
-} from '@/entities/chat';
+} from '@/entities/chat'
 
 const MessageForm = () => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const currentChannelId = useSelector(selectCurrentChannelId);
-  const sendStatus = useSelector(selectSendStatus);
-  const sendError = useSelector(selectSendError);
-  const socketStatus = useSelector(selectSocketStatus);
-  const connectionError = useSelector(selectConnectionError);
-  const [body, setBody] = useState('');
-  const previousConnectionErrorRef = useRef(null);
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const currentChannelId = useSelector(selectCurrentChannelId)
+  const sendStatus = useSelector(selectSendStatus)
+  const sendError = useSelector(selectSendError)
+  const socketStatus = useSelector(selectSocketStatus)
+  const connectionError = useSelector(selectConnectionError)
+  const [body, setBody] = useState('')
+  const previousConnectionErrorRef = useRef(null)
 
-  const trimmedBody = body.trim();
-  const isSubmitDisabled = trimmedBody === '' || !currentChannelId || sendStatus === 'loading';
+  const trimmedBody = body.trim()
+  const isSubmitDisabled = trimmedBody === '' || !currentChannelId || sendStatus === 'loading'
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async event => {
+    event.preventDefault()
 
     if (isSubmitDisabled) {
-      return;
+      return
     }
 
     if (hasProfanity(trimmedBody)) {
-      toast.warn(t('toasts.messageSanitized'));
+      toast.warn(t('toasts.messageSanitized'))
     }
 
     try {
-      await dispatch(sendMessage(body)).unwrap();
-      setBody('');
+      await dispatch(sendMessage(body)).unwrap()
+      setBody('')
     } catch (error) {
       // Ошибка уже сохранена в store и показана в интерфейсе.
     }
-  };
+  }
 
   useEffect(() => {
     if (connectionError && previousConnectionErrorRef.current !== connectionError) {
       if (connectionError === 'connection-lost') {
-        toast.warn(t('errors.connectionLost'));
+        toast.warn(t('errors.connectionLost'))
       } else if (connectionError === 'connection-failed') {
-        toast.error(t('errors.connectionFailed'));
+        toast.error(t('errors.connectionFailed'))
       }
     }
 
-    previousConnectionErrorRef.current = connectionError;
-  }, [connectionError, t]);
+    previousConnectionErrorRef.current = connectionError
+  }, [connectionError, t])
 
   return (
     <div>
@@ -80,7 +80,7 @@ const MessageForm = () => {
             placeholder={t('chat.composerPlaceholder')}
             aria-label={t('chat.composerAria')}
             value={body}
-            onChange={(event) => setBody(event.target.value)}
+            onChange={event => setBody(event.target.value)}
             disabled={!currentChannelId || sendStatus === 'loading'}
           />
           <button
@@ -112,7 +112,7 @@ const MessageForm = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default MessageForm;
+export default MessageForm

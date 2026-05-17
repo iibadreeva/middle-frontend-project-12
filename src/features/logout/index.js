@@ -1,1 +1,1 @@
-export { default as useLogout } from './model/use-logout.js';
+export { default as useLogout } from './model/use-logout.js'

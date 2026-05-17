@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { logRollbarError, logRollbarWarning } from '@/shared/lib/rollbar.js';
-import { connectChatSocket, disconnectChatSocket } from '../api/chat-socket.js';
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { logRollbarError, logRollbarWarning } from '@/shared/lib/rollbar.js'
+import { connectChatSocket, disconnectChatSocket } from '../api/chat-socket.js'
 import {
   channelAdded,
   channelRemoved,
@@ -10,34 +10,34 @@ import {
   socketConnected,
   socketDisconnected,
   socketErrored,
-} from './slice.js';
+} from './slice.js'
 
 const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!isAuthenticated || fetchStatus !== 'succeeded') {
-      return undefined;
+      return undefined
     }
 
-    const socket = connectChatSocket();
+    const socket = connectChatSocket()
 
-    const handleNewMessage = (message) => {
-      dispatch(messageReceived(message));
-    };
-    const handleNewChannel = (channel) => {
-      dispatch(channelAdded(channel));
-    };
-    const handleRemoveChannel = (channel) => {
-      dispatch(channelRemoved(channel));
-    };
-    const handleRenameChannel = (channel) => {
-      dispatch(channelRenamed(channel));
-    };
+    const handleNewMessage = message => {
+      dispatch(messageReceived(message))
+    }
+    const handleNewChannel = channel => {
+      dispatch(channelAdded(channel))
+    }
+    const handleRemoveChannel = channel => {
+      dispatch(channelRemoved(channel))
+    }
+    const handleRenameChannel = channel => {
+      dispatch(channelRenamed(channel))
+    }
     const handleConnect = () => {
-      dispatch(socketConnected());
-    };
-    const handleDisconnect = (reason) => {
+      dispatch(socketConnected())
+    }
+    const handleDisconnect = reason => {
       if (reason !== 'io client disconnect') {
         logRollbarWarning({
           message: 'Chat socket disconnected unexpectedly',
@@ -46,12 +46,12 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
             operation: 'socketDisconnect',
             reason,
           },
-        });
+        })
       }
 
-      dispatch(socketDisconnected());
-    };
-    const handleConnectError = (error) => {
+      dispatch(socketDisconnected())
+    }
+    const handleConnectError = error => {
       logRollbarError({
         message: 'Chat socket connection failed',
         error,
@@ -59,33 +59,33 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
           feature: 'chat',
           operation: 'socketConnectError',
         },
-      });
-      dispatch(socketErrored());
-    };
+      })
+      dispatch(socketErrored())
+    }
 
-    socket.on('newMessage', handleNewMessage);
-    socket.on('newChannel', handleNewChannel);
-    socket.on('removeChannel', handleRemoveChannel);
-    socket.on('renameChannel', handleRenameChannel);
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
-    socket.on('connect_error', handleConnectError);
+    socket.on('newMessage', handleNewMessage)
+    socket.on('newChannel', handleNewChannel)
+    socket.on('removeChannel', handleRemoveChannel)
+    socket.on('renameChannel', handleRenameChannel)
+    socket.on('connect', handleConnect)
+    socket.on('disconnect', handleDisconnect)
+    socket.on('connect_error', handleConnectError)
 
     if (socket.connected) {
-      dispatch(socketConnected());
+      dispatch(socketConnected())
     }
 
     return () => {
-      socket.off('newMessage', handleNewMessage);
-      socket.off('newChannel', handleNewChannel);
-      socket.off('removeChannel', handleRemoveChannel);
-      socket.off('renameChannel', handleRenameChannel);
-      socket.off('connect', handleConnect);
-      socket.off('disconnect', handleDisconnect);
-      socket.off('connect_error', handleConnectError);
-      disconnectChatSocket();
-    };
-  }, [dispatch, fetchStatus, isAuthenticated]);
-};
+      socket.off('newMessage', handleNewMessage)
+      socket.off('newChannel', handleNewChannel)
+      socket.off('removeChannel', handleRemoveChannel)
+      socket.off('renameChannel', handleRenameChannel)
+      socket.off('connect', handleConnect)
+      socket.off('disconnect', handleDisconnect)
+      socket.off('connect_error', handleConnectError)
+      disconnectChatSocket()
+    }
+  }, [dispatch, fetchStatus, isAuthenticated])
+}
 
-export default useChatSocket;
+export default useChatSocket

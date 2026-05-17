@@ -1,14 +1,16 @@
-import { Formik } from 'formik';
-import { Alert, Button, Form, Stack } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
-import { FormField } from '@/shared/ui/form-field';
-import useSignup from '../model/use-signup.js';
-import './signup-form.css';
+import { Formik } from 'formik'
+import {
+  Alert, Button, Form, Stack,
+} from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import * as Yup from 'yup'
+import { FormField } from '@/shared/ui/form-field'
+import useSignup from '../model/use-signup.js'
+import './signup-form.css'
 
 const SignupForm = () => {
-  const signup = useSignup();
-  const { t } = useTranslation();
+  const signup = useSignup()
+  const { t } = useTranslation()
   const validationSchema = Yup.object({
     username: Yup.string()
       .required(t('validation.required'))
@@ -18,21 +20,21 @@ const SignupForm = () => {
     confirmPassword: Yup.string()
       .required(t('validation.required'))
       .oneOf([Yup.ref('password')], t('validation.passwordsMatch')),
-  });
+  })
 
   return (
     <Formik
       initialValues={{ username: '', password: '', confirmPassword: '' }}
       validationSchema={validationSchema}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
-        setStatus(null);
+        setStatus(null)
 
         try {
-          await signup(values);
+          await signup(values)
         } catch (error) {
-          setStatus(error.message);
+          setStatus(error.message)
         } finally {
-          setSubmitting(false);
+          setSubmitting(false)
         }
       }}
     >
@@ -86,7 +88,7 @@ const SignupForm = () => {
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default SignupForm;
+export default SignupForm

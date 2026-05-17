@@ -1,4 +1,6 @@
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import {
+  Card, Col, Container, Row,
+} from 'react-bootstrap'
 
 const AuthLayout = ({
   imageSrc,
@@ -29,6 +31,6 @@ const AuthLayout = ({
       </Col>
     </Row>
   </Container>
-);
+)
 
-export default AuthLayout;
+export default AuthLayout

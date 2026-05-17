@@ -1,5 +1,5 @@
-import { Chat } from '@/widgets/chat';
+import { Chat } from '@/widgets/chat'
 
-const HomePage = () => <Chat />;
+const HomePage = () => <Chat />
 
-export default HomePage;
+export default HomePage

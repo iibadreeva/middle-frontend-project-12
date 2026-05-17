@@ -1,5 +1,5 @@
-import en from './en.js';
-import ru from './ru.js';
+import en from './en.js'
+import ru from './ru.js'
 
 const resources = {
   ru: {
@@ -8,6 +8,6 @@ const resources = {
   en: {
     translation: en,
   },
-};
+}
 
-export default resources;
+export default resources

@@ -1,9 +1,9 @@
-import { Button, ButtonGroup } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import appRoutes from '@/shared/config/routes';
+import { Button, ButtonGroup } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import appRoutes from '@/shared/config/routes'
 
 const RollbarErrorFallback = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className="container min-vh-100 d-flex align-items-center justify-content-center py-5">
@@ -20,7 +20,7 @@ const RollbarErrorFallback = () => {
         </ButtonGroup>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RollbarErrorFallback;
+export default RollbarErrorFallback

@@ -1,42 +1,42 @@
-import { useState } from 'react';
-import { Alert, Button, Modal } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { removeChannel, selectRemoveChannelStatus } from '@/entities/chat';
+import { useState } from 'react'
+import { Alert, Button, Modal } from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { removeChannel, selectRemoveChannelStatus } from '@/entities/chat'
 
 const RemoveChannelModal = ({ channel, show, onHide }) => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const removeChannelStatus = useSelector(selectRemoveChannelStatus);
-  const [error, setError] = useState(null);
-  const isLoading = removeChannelStatus === 'loading';
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const removeChannelStatus = useSelector(selectRemoveChannelStatus)
+  const [error, setError] = useState(null)
+  const isLoading = removeChannelStatus === 'loading'
 
   if (!show || !channel) {
-    return null;
+    return null
   }
 
   const handleRemove = async () => {
-    setError(null);
+    setError(null)
 
     try {
-      await dispatch(removeChannel(channel.id)).unwrap();
-      toast.success(t('toasts.channelRemoved'));
-      onHide();
+      await dispatch(removeChannel(channel.id)).unwrap()
+      toast.success(t('toasts.channelRemoved'))
+      onHide()
     } catch (requestError) {
       if (requestError !== 'unauthorized') {
-        setError(t('errors.removeChannelFailed'));
+        setError(t('errors.removeChannelFailed'))
       }
     }
-  };
+  }
 
   return (
     <Modal
       show={show}
       onHide={() => {
         if (!isLoading) {
-          setError(null);
-          onHide();
+          setError(null)
+          onHide()
         }
       }}
       centered
@@ -56,8 +56,8 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
         <Button
           variant="secondary"
           onClick={() => {
-            setError(null);
-            onHide();
+            setError(null)
+            onHide()
           }}
           disabled={isLoading}
         >
@@ -68,7 +68,7 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default RemoveChannelModal;
+export default RemoveChannelModal

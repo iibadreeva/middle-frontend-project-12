@@ -1,12 +1,12 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { HomePage } from '@/pages/home';
-import { LoginPage } from '@/pages/login';
-import { NotFoundPage } from '@/pages/not-found';
-import { SignupPage } from '@/pages/signup';
-import appRoutes from '@/shared/config/routes';
-import AppShell from '@/app/ui/app-shell.jsx';
-import GuestRoute from './guest-route.jsx';
-import RequireAuth from './require-auth.jsx';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HomePage } from '@/pages/home'
+import { LoginPage } from '@/pages/login'
+import { NotFoundPage } from '@/pages/not-found'
+import { SignupPage } from '@/pages/signup'
+import appRoutes from '@/shared/config/routes'
+import AppShell from '@/app/ui/app-shell.jsx'
+import GuestRoute from './guest-route.jsx'
+import RequireAuth from './require-auth.jsx'
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -40,6 +40,6 @@ const AppRouter = () => (
       </Routes>
     </AppShell>
   </BrowserRouter>
-);
+)
 
-export default AppRouter;
+export default AppRouter

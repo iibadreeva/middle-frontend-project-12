@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import appRoutes from '@/shared/config/routes';
-import notFoundIllustration from '../assets/404.svg';
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import appRoutes from '@/shared/config/routes'
+import notFoundIllustration from '../assets/404.svg'
 
 const NotFoundPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <section className="text-center">
@@ -16,7 +16,7 @@ const NotFoundPage = () => {
         <Link to={appRoutes.home}>{t('notFound.homeLink')}</Link>
       </p>
     </section>
-  );
-};
+  )
+}
 
-export default NotFoundPage;
+export default NotFoundPage

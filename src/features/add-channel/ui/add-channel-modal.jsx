@@ -1,26 +1,26 @@
-import { useRef } from 'react';
-import { Formik } from 'formik';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+import { useRef } from 'react'
+import { Formik } from 'formik'
+import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 import {
   addNewChannel,
   createChannelNameValidationSchema,
   selectAddChannelStatus,
   selectChannels,
-} from '@/entities/chat';
-import { ChannelNameModal } from '@/shared/ui/channel-name-modal';
+} from '@/entities/chat'
+import { ChannelNameModal } from '@/shared/ui/channel-name-modal'
 
 const AddChannelModal = ({ show, onHide }) => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const channels = useSelector(selectChannels);
-  const addChannelStatus = useSelector(selectAddChannelStatus);
-  const inputRef = useRef(null);
-  const isLoading = addChannelStatus === 'loading';
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const channels = useSelector(selectChannels)
+  const addChannelStatus = useSelector(selectAddChannelStatus)
+  const inputRef = useRef(null)
+  const isLoading = addChannelStatus === 'loading'
 
   if (!show) {
-    return null;
+    return null
   }
 
   return (
@@ -31,18 +31,18 @@ const AddChannelModal = ({ show, onHide }) => {
         t,
       })}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
-        setStatus(null);
+        setStatus(null)
 
         try {
-          await dispatch(addNewChannel(values.name)).unwrap();
-          toast.success(t('toasts.channelCreated'));
-          onHide();
+          await dispatch(addNewChannel(values.name)).unwrap()
+          toast.success(t('toasts.channelCreated'))
+          onHide()
         } catch (error) {
           if (error !== 'unauthorized') {
-            setStatus(t('errors.addChannelFailed'));
+            setStatus(t('errors.addChannelFailed'))
           }
         } finally {
-          setSubmitting(false);
+          setSubmitting(false)
         }
       }}
     >
@@ -72,7 +72,7 @@ const AddChannelModal = ({ show, onHide }) => {
           onHide={onHide}
           onEntered={() => {
             if (inputRef.current) {
-              inputRef.current.focus();
+              inputRef.current.focus()
             }
           }}
           onBlur={handleBlur}
@@ -84,7 +84,7 @@ const AddChannelModal = ({ show, onHide }) => {
         />
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default AddChannelModal;
+export default AddChannelModal

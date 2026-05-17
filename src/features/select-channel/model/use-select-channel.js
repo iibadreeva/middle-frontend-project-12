@@ -1,16 +1,16 @@
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { setCurrentChannel } from '@/entities/chat';
+import { useCallback } from 'react'
+import { useDispatch } from 'react-redux'
+import { setCurrentChannel } from '@/entities/chat'
 
 const useSelectChannel = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   return useCallback(
-    (channelId) => {
-      dispatch(setCurrentChannel(channelId));
+    channelId => {
+      dispatch(setCurrentChannel(channelId))
     },
     [dispatch],
-  );
-};
+  )
+}
 
-export default useSelectChannel;
+export default useSelectChannel

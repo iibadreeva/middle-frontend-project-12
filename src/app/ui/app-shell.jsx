@@ -1,18 +1,18 @@
-import { Button } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ToastContainer } from 'react-toastify';
-import { selectIsAuthenticated } from '@/entities/session';
-import { useLogout } from '@/features/logout';
-import appRoutes from '@/shared/config/routes';
-import { isRollbarEnabled } from '@/shared/lib/rollbar.js';
-import RollbarSessionSync from '@/app/providers/rollbar/ui/rollbar-session-sync.jsx';
+import { Button } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { ToastContainer } from 'react-toastify'
+import { selectIsAuthenticated } from '@/entities/session'
+import { useLogout } from '@/features/logout'
+import appRoutes from '@/shared/config/routes'
+import { isRollbarEnabled } from '@/shared/lib/rollbar.js'
+import RollbarSessionSync from '@/app/providers/rollbar/ui/rollbar-session-sync.jsx'
 
 const AppShell = ({ children }) => {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const logout = useLogout();
-  const { t } = useTranslation();
+  const isAuthenticated = useSelector(selectIsAuthenticated)
+  const logout = useLogout()
+  const { t } = useTranslation()
 
   return (
     <div className="h-100 bg-light">
@@ -41,7 +41,7 @@ const AppShell = ({ children }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AppShell;
+export default AppShell

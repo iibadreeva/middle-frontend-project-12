@@ -1,1 +1,1 @@
-export { default as ChannelNameModal } from './channel-name-modal.jsx';
+export { default as ChannelNameModal } from './channel-name-modal.jsx'

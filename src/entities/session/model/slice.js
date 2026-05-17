@@ -1,10 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   username: null,
   token: null,
   isAuthenticated: false,
-};
+}
 
 const sessionSlice = createSlice({
   name: 'session',
@@ -18,8 +18,8 @@ const sessionSlice = createSlice({
     }),
     clearCredentials: () => initialState,
   },
-});
+})
 
-export const { setCredentials, clearCredentials } = sessionSlice.actions;
+export const { setCredentials, clearCredentials } = sessionSlice.actions
 
-export default sessionSlice.reducer;
+export default sessionSlice.reducer

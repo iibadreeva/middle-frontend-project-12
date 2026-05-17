@@ -1,4 +1,6 @@
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import {
+  Alert, Button, Form, Modal,
+} from 'react-bootstrap'
 
 const ChannelNameModal = ({
   show,
@@ -27,7 +29,7 @@ const ChannelNameModal = ({
     show={show}
     onHide={() => {
       if (!isSubmitting) {
-        onHide();
+        onHide()
       }
     }}
     onEntered={onEntered}
@@ -74,6 +76,6 @@ const ChannelNameModal = ({
       </Form>
     </Modal.Body>
   </Modal>
-);
+)
 
-export default ChannelNameModal;
+export default ChannelNameModal

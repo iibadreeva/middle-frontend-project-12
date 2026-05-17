@@ -1,1 +1,1 @@
-export { default as LoginForm } from './ui/login-form.jsx';
+export { default as LoginForm } from './ui/login-form.jsx'

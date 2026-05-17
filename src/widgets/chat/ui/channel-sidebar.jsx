@@ -1,5 +1,5 @@
-import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 const ChannelSidebar = ({
   channels,
@@ -10,7 +10,7 @@ const ChannelSidebar = ({
   onOpenRenameChannel,
   onSelectChannel,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <>
@@ -29,9 +29,9 @@ const ChannelSidebar = ({
         </Button>
       </div>
       <div className="overflow-auto chatChannelsList flex-grow-1">
-        {channels.map((channel) => {
-          const isActive = channel.id === currentChannelId;
-          const variant = isActive ? 'secondary' : 'light';
+        {channels.map(channel => {
+          const isActive = channel.id === currentChannelId
+          const variant = isActive ? 'secondary' : 'light'
 
           if (!channel.removable) {
             return (
@@ -46,7 +46,7 @@ const ChannelSidebar = ({
               >
                 <span className="d-block text-truncate">{`# ${channel.name}`}</span>
               </Button>
-            );
+            )
           }
 
           return (
@@ -80,11 +80,11 @@ const ChannelSidebar = ({
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-          );
+          )
         })}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ChannelSidebar;
+export default ChannelSidebar

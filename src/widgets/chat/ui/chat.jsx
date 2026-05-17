@@ -1,51 +1,59 @@
-import { useEffect, useRef, useState } from 'react';
-import { Alert, Spinner } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { AddChannelModal } from '@/features/add-channel';
-import { RemoveChannelModal } from '@/features/remove-channel';
-import { RenameChannelModal } from '@/features/rename-channel';
-import { MessageForm } from '@/features/send-message';
-import { useSelectChannel } from '@/features/select-channel';
-import useChat from '../model/use-chat.js';
-import ChatHeader from './chat-header.jsx';
-import ChatLayout from './chat-layout.jsx';
-import ChannelSidebar from './channel-sidebar.jsx';
-import MessageList from './message-list.jsx';
+import { useEffect, useRef, useState } from 'react'
+import { Alert, Spinner } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { AddChannelModal } from '@/features/add-channel'
+import { RemoveChannelModal } from '@/features/remove-channel'
+import { RenameChannelModal } from '@/features/rename-channel'
+import { MessageForm } from '@/features/send-message'
+import { useSelectChannel } from '@/features/select-channel'
+import useChat from '../model/use-chat.js'
+import ChatHeader from './chat-header.jsx'
+import ChatLayout from './chat-layout.jsx'
+import ChannelSidebar from './channel-sidebar.jsx'
+import MessageList from './message-list.jsx'
 
 const Chat = () => {
-  const selectChannel = useSelectChannel();
-  const { t } = useTranslation();
-  const [modalState, setModalState] = useState({ type: null, channel: null });
-  const previousLoadErrorRef = useRef(null);
-  const { channels, currentChannel, currentChannelId, currentMessages, fetchStatus, loadError } =
-    useChat();
+  const selectChannel = useSelectChannel()
+  const { t } = useTranslation()
+  const [modalState, setModalState] = useState({ type: null, channel: null })
+  const previousLoadErrorRef = useRef(null)
+  const {
+    channels,
+    currentChannel,
+    currentChannelId,
+    currentMessages,
+    fetchStatus,
+    loadError,
+  } = useChat()
 
   const closeModal = () => {
-    setModalState({ type: null, channel: null });
-  };
+    setModalState({ type: null, channel: null })
+  }
 
   const openAddChannelModal = () => {
-    setModalState({ type: 'add', channel: null });
-  };
+    setModalState({ type: 'add', channel: null })
+  }
 
-  const openRenameChannelModal = (channel) => {
-    setModalState({ type: 'rename', channel });
-  };
+  const openRenameChannelModal = channel => {
+    setModalState({ type: 'rename', channel })
+  }
 
-  const openRemoveChannelModal = (channel) => {
-    setModalState({ type: 'remove', channel });
-  };
+  const openRemoveChannelModal = channel => {
+    setModalState({ type: 'remove', channel })
+  }
 
   useEffect(() => {
     if (fetchStatus === 'failed' && loadError && previousLoadErrorRef.current !== loadError) {
-      const message =
-        loadError === 'load-failed' ? t('errors.chatLoadFailed') : t('errors.chatLoadGeneric');
-      toast.error(message);
+      const message = loadError === 'load-failed'
+        ? t('errors.chatLoadFailed')
+        : t('errors.chatLoadGeneric')
+
+      toast.error(message)
     }
 
-    previousLoadErrorRef.current = fetchStatus === 'failed' ? loadError : null;
-  }, [fetchStatus, loadError, t]);
+    previousLoadErrorRef.current = fetchStatus === 'failed' ? loadError : null
+  }, [fetchStatus, loadError, t])
 
   const renderMessagesContent = () => {
     if (fetchStatus === 'loading') {
@@ -54,7 +62,7 @@ const Chat = () => {
           <Spinner animation="border" size="sm" className="me-2" />
           <span>{t('chat.loading')}</span>
         </div>
-      );
+      )
     }
 
     if (fetchStatus === 'failed') {
@@ -64,16 +72,16 @@ const Chat = () => {
             {loadError === 'load-failed' ? t('errors.chatLoadFailed') : t('errors.chatLoadGeneric')}
           </Alert>
         </div>
-      );
+      )
     }
 
-    return <MessageList messages={currentMessages} />;
-  };
+    return <MessageList messages={currentMessages} />
+  }
 
   return (
     <>
       <ChatLayout
-        sidebar={
+        sidebar={(
           <ChannelSidebar
             channels={channels}
             currentChannelId={currentChannelId}
@@ -83,13 +91,13 @@ const Chat = () => {
             onOpenRenameChannel={openRenameChannelModal}
             onSelectChannel={selectChannel}
           />
-        }
-        header={
+        )}
+        header={(
           <ChatHeader
             channelName={currentChannel ? currentChannel.name : 'general'}
             messageCount={currentMessages.length}
           />
-        }
+        )}
         messages={renderMessagesContent()}
         composer={<MessageForm />}
       />
@@ -105,7 +113,7 @@ const Chat = () => {
         onHide={closeModal}
       />
     </>
-  );
-};
+  )
+}
 
-export default Chat;
+export default Chat

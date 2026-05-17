@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   deleteChannel,
   fetchChatData,
@@ -6,9 +6,9 @@ import {
   patchChannel,
   postChannel,
   postMessage,
-} from '../api/chat-api.js';
-import { sanitizeChannelName, sanitizeMessageText } from '../lib/profanity.js';
-import { logRollbarError } from '@/shared/lib/rollbar.js';
+} from '../api/chat-api.js'
+import { sanitizeChannelName, sanitizeMessageText } from '../lib/profanity.js'
+import { logRollbarError } from '@/shared/lib/rollbar.js'
 
 const initialState = {
   channels: [],
@@ -26,110 +26,102 @@ const initialState = {
   renameChannelError: null,
   removeChannelError: null,
   connectionError: null,
-};
+}
 
 const addMessage = (messages, message) => {
-  const hasMessage = messages.some((currentMessage) => currentMessage.id === message.id);
+  const hasMessage = messages.some(currentMessage => currentMessage.id === message.id)
 
   if (hasMessage) {
-    return messages;
+    return messages
   }
 
-  return [...messages, message];
-};
+  return [...messages, message]
+}
 
-const sanitizeMessage = (message) => ({
+const sanitizeMessage = message => ({
   ...message,
   body: sanitizeMessageText(message.body),
-});
+})
 
-const sanitizeMessages = (messages) => messages.map(sanitizeMessage);
+const sanitizeMessages = messages => messages.map(sanitizeMessage)
 
-const sanitizeChannel = (channel) => ({
+const sanitizeChannel = channel => ({
   ...channel,
   name: sanitizeChannelName(channel.name),
-});
+})
 
-const sanitizeChannels = (channels) => channels.map(sanitizeChannel);
+const sanitizeChannels = channels => channels.map(sanitizeChannel)
 
-const logChatAsyncError = ({ error, extra = {}, operation }) =>
-  logRollbarError({
-    message: `Chat operation failed: ${operation}`,
-    error,
-    extra: {
-      feature: 'chat',
-      operation,
-      ...extra,
-    },
-  });
+const logChatAsyncError = ({ error, extra = {}, operation }) => logRollbarError({
+  message: `Chat operation failed: ${operation}`,
+  error,
+  extra: {
+    feature: 'chat',
+    operation,
+    ...extra,
+  },
+})
 
 const addChannel = (channels, channel) => {
-  const hasChannel = channels.some((currentChannel) => currentChannel.id === channel.id);
+  const hasChannel = channels.some(currentChannel => currentChannel.id === channel.id)
 
   if (hasChannel) {
-    return channels.map((currentChannel) =>
-      currentChannel.id === channel.id ? channel : currentChannel,
-    );
+    return channels.map(currentChannel => (currentChannel.id === channel.id ? channel : currentChannel))
   }
 
-  return [...channels, channel];
-};
+  return [...channels, channel]
+}
 
-const renameExistingChannel = (channels, channel) =>
-  channels.map((currentChannel) =>
-    currentChannel.id === channel.id ? { ...currentChannel, ...channel } : currentChannel,
-  );
+const renameExistingChannel = (channels, channel) => channels.map(currentChannel => (currentChannel.id === channel.id ? { ...currentChannel, ...channel } : currentChannel))
 
-const removeExistingChannel = (channels, channelId) =>
-  channels.filter((channel) => channel.id !== channelId);
+const removeExistingChannel = (channels, channelId) => channels.filter(channel => channel.id !== channelId)
 
-const removeChannelMessages = (messages, channelId) =>
-  messages.filter((message) => message.channelId !== channelId);
+const removeChannelMessages = (messages, channelId) => messages.filter(message => message.channelId !== channelId)
 
 const getCurrentChannelId = (channels, currentChannelId) => {
   if (channels.length === 0) {
-    return null;
+    return null
   }
 
-  const hasCurrentChannel = channels.some((channel) => channel.id === currentChannelId);
+  const hasCurrentChannel = channels.some(channel => channel.id === currentChannelId)
 
   if (hasCurrentChannel) {
-    return currentChannelId;
+    return currentChannelId
   }
 
-  const generalChannel = channels.find((channel) => channel.name === 'general');
+  const generalChannel = channels.find(channel => channel.name === 'general')
 
   if (generalChannel) {
-    return generalChannel.id;
+    return generalChannel.id
   }
 
-  return channels[0].id;
-};
+  return channels[0].id
+}
 
 export const fetchInitialChatData = createAsyncThunk(
   'chat/fetchInitialChatData',
   async (_, { getState, rejectWithValue }) => {
-    const { token } = getState().session;
+    const { token } = getState().session
 
     if (!token) {
-      return rejectWithValue('missing-token');
+      return rejectWithValue('missing-token')
     }
 
     try {
-      return await fetchChatData(token);
+      return await fetchChatData(token)
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized');
+        return rejectWithValue('unauthorized')
       }
 
-      logChatAsyncError({ error, operation: 'fetchInitialChatData' });
-      return rejectWithValue('load-failed');
+      logChatAsyncError({ error, operation: 'fetchInitialChatData' })
+      return rejectWithValue('load-failed')
     }
   },
   {
     condition: (_, { getState }) => getState().chat.fetchStatus === 'idle',
   },
-);
+)
 
 export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
@@ -137,13 +129,13 @@ export const sendMessage = createAsyncThunk(
     const {
       session: { token, username },
       chat: { currentChannelId },
-    } = getState();
+    } = getState()
 
-    const trimmedBody = body.trim();
-    const sanitizedBody = sanitizeMessageText(trimmedBody);
+    const trimmedBody = body.trim()
+    const sanitizedBody = sanitizeMessageText(trimmedBody)
 
     if (!token || !username || !currentChannelId || sanitizedBody === '') {
-      return rejectWithValue('invalid-message');
+      return rejectWithValue('invalid-message')
     }
 
     try {
@@ -152,65 +144,65 @@ export const sendMessage = createAsyncThunk(
         body: sanitizedBody,
         channelId: currentChannelId,
         username,
-      });
+      })
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized');
+        return rejectWithValue('unauthorized')
       }
 
       logChatAsyncError({
         error,
         operation: 'sendMessage',
         extra: { channelId: currentChannelId, username },
-      });
-      return rejectWithValue('send-failed');
+      })
+      return rejectWithValue('send-failed')
     }
   },
-);
+)
 
 export const addNewChannel = createAsyncThunk(
   'chat/addNewChannel',
   async (name, { getState, rejectWithValue }) => {
     const {
       session: { token },
-    } = getState();
-    const trimmedName = name.trim();
-    const sanitizedName = sanitizeChannelName(trimmedName);
+    } = getState()
+    const trimmedName = name.trim()
+    const sanitizedName = sanitizeChannelName(trimmedName)
 
     if (!token || sanitizedName === '') {
-      return rejectWithValue('invalid-channel-name');
+      return rejectWithValue('invalid-channel-name')
     }
 
     try {
       return await postChannel({
         token,
         name: sanitizedName,
-      });
+      })
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized');
+        return rejectWithValue('unauthorized')
       }
 
       logChatAsyncError({
         error,
         operation: 'addNewChannel',
-      });
-      return rejectWithValue('add-channel-failed');
+      })
+      return rejectWithValue('add-channel-failed')
     }
   },
-);
+)
 
 export const renameChannel = createAsyncThunk(
   'chat/renameChannel',
   async ({ channelId, name }, { getState, rejectWithValue }) => {
     const {
       session: { token },
-    } = getState();
-    const trimmedName = name.trim();
-    const sanitizedName = sanitizeChannelName(trimmedName);
+    } = getState()
+    const trimmedName = name.trim()
+    const sanitizedName = sanitizeChannelName(trimmedName)
 
     if (!token || !channelId || sanitizedName === '') {
-      return rejectWithValue('invalid-channel-name');
+      return rejectWithValue('invalid-channel-name')
     }
 
     try {
@@ -218,52 +210,52 @@ export const renameChannel = createAsyncThunk(
         token,
         channelId,
         name: sanitizedName,
-      });
+      })
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized');
+        return rejectWithValue('unauthorized')
       }
 
       logChatAsyncError({
         error,
         operation: 'renameChannel',
         extra: { channelId },
-      });
-      return rejectWithValue('rename-channel-failed');
+      })
+      return rejectWithValue('rename-channel-failed')
     }
   },
-);
+)
 
 export const removeChannel = createAsyncThunk(
   'chat/removeChannel',
   async (channelId, { getState, rejectWithValue }) => {
     const {
       session: { token },
-    } = getState();
+    } = getState()
 
     if (!token || !channelId) {
-      return rejectWithValue('invalid-channel-id');
+      return rejectWithValue('invalid-channel-id')
     }
 
     try {
       return await deleteChannel({
         token,
         channelId,
-      });
+      })
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized');
+        return rejectWithValue('unauthorized')
       }
 
       logChatAsyncError({
         error,
         operation: 'removeChannel',
         extra: { channelId },
-      });
-      return rejectWithValue('remove-channel-failed');
+      })
+      return rejectWithValue('remove-channel-failed')
     }
   },
-);
+)
 
 const chatSlice = createSlice({
   name: 'chat',
@@ -286,35 +278,35 @@ const chatSlice = createSlice({
       channels: renameExistingChannel(state.channels, sanitizeChannel(action.payload)),
     }),
     channelRemoved: (state, action) => {
-      const nextChannels = removeExistingChannel(state.channels, action.payload.id);
+      const nextChannels = removeExistingChannel(state.channels, action.payload.id)
 
       return {
         ...state,
         channels: nextChannels,
         messages: removeChannelMessages(state.messages, action.payload.id),
         currentChannelId: getCurrentChannelId(nextChannels, state.currentChannelId),
-      };
+      }
     },
-    socketConnected: (state) => ({
+    socketConnected: state => ({
       ...state,
       socketStatus: 'connected',
       connectionError: null,
     }),
-    socketDisconnected: (state) => ({
+    socketDisconnected: state => ({
       ...state,
       socketStatus: 'disconnected',
       connectionError: 'connection-lost',
     }),
-    socketErrored: (state) => ({
+    socketErrored: state => ({
       ...state,
       socketStatus: 'error',
       connectionError: 'connection-failed',
     }),
     resetChat: () => initialState,
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchInitialChatData.pending, (state) => ({
+      .addCase(fetchInitialChatData.pending, state => ({
         ...state,
         fetchStatus: 'loading',
         loadError: null,
@@ -335,7 +327,7 @@ const chatSlice = createSlice({
         fetchStatus: action.payload === 'unauthorized' ? 'idle' : 'failed',
         loadError: action.payload || 'load-failed',
       }))
-      .addCase(sendMessage.pending, (state) => ({
+      .addCase(sendMessage.pending, state => ({
         ...state,
         sendStatus: 'loading',
         sendError: null,
@@ -351,7 +343,7 @@ const chatSlice = createSlice({
         sendStatus: 'idle',
         sendError: action.payload || 'send-failed',
       }))
-      .addCase(addNewChannel.pending, (state) => ({
+      .addCase(addNewChannel.pending, state => ({
         ...state,
         addChannelStatus: 'loading',
         addChannelError: null,
@@ -368,7 +360,7 @@ const chatSlice = createSlice({
         addChannelStatus: 'idle',
         addChannelError: action.payload || 'add-channel-failed',
       }))
-      .addCase(renameChannel.pending, (state) => ({
+      .addCase(renameChannel.pending, state => ({
         ...state,
         renameChannelStatus: 'loading',
         renameChannelError: null,
@@ -384,13 +376,13 @@ const chatSlice = createSlice({
         renameChannelStatus: 'idle',
         renameChannelError: action.payload || 'rename-channel-failed',
       }))
-      .addCase(removeChannel.pending, (state) => ({
+      .addCase(removeChannel.pending, state => ({
         ...state,
         removeChannelStatus: 'loading',
         removeChannelError: null,
       }))
       .addCase(removeChannel.fulfilled, (state, action) => {
-        const nextChannels = removeExistingChannel(state.channels, action.payload.id);
+        const nextChannels = removeExistingChannel(state.channels, action.payload.id)
 
         return {
           ...state,
@@ -399,15 +391,15 @@ const chatSlice = createSlice({
           currentChannelId: getCurrentChannelId(nextChannels, state.currentChannelId),
           removeChannelStatus: 'idle',
           removeChannelError: null,
-        };
+        }
       })
       .addCase(removeChannel.rejected, (state, action) => ({
         ...state,
         removeChannelStatus: 'idle',
         removeChannelError: action.payload || 'remove-channel-failed',
-      }));
+      }))
   },
-});
+})
 
 export const {
   channelAdded,
@@ -419,6 +411,6 @@ export const {
   socketConnected,
   socketDisconnected,
   socketErrored,
-} = chatSlice.actions;
+} = chatSlice.actions
 
-export default chatSlice.reducer;
+export default chatSlice.reducer

@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { chatReducer } from '@/entities/chat';
-import { loadSession, sessionReducer } from '@/entities/session';
+import { configureStore } from '@reduxjs/toolkit'
+import { chatReducer } from '@/entities/chat'
+import { loadSession, sessionReducer } from '@/entities/session'
 
 const store = configureStore({
   reducer: {
@@ -10,6 +10,6 @@ const store = configureStore({
   preloadedState: {
     session: loadSession(),
   },
-});
+})
 
-export default store;
+export default store

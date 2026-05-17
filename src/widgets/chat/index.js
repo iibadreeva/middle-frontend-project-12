@@ -1,1 +1,1 @@
-export { default as Chat } from './ui/chat.jsx';
+export { default as Chat } from './ui/chat.jsx'

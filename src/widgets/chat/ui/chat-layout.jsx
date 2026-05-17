@@ -1,7 +1,11 @@
-import { Card, Col, Container, Row } from 'react-bootstrap';
-import './chat-layout.css';
+import {
+  Card, Col, Container, Row,
+} from 'react-bootstrap'
+import './chat-layout.css'
 
-const ChatLayout = ({ sidebar, header, messages, composer }) => (
+const ChatLayout = ({
+  sidebar, header, messages, composer,
+}) => (
   <section className="chatPage bg-light container my-4">
     <Container fluid className="h-100">
       <Row className="justify-content-center h-100">
@@ -22,6 +26,6 @@ const ChatLayout = ({ sidebar, header, messages, composer }) => (
       </Row>
     </Container>
   </section>
-);
+)
 
-export default ChatLayout;
+export default ChatLayout
