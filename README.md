@@ -228,4 +228,5 @@ README отражает текущее состояние проекта, а н�
 
 - [Документация сервера `@hexlet/chat-server`](https://www.npmjs.com/package/@hexlet/chat-server)
 - [Render](https://render.com/)
+- [Rollbar](https://rollbar.com/)
 

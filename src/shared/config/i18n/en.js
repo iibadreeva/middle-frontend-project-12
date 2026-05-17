@@ -61,7 +61,7 @@ const en = {
     send: 'Send',
     channels: 'Channels',
     addChannelAria: 'Add channel',
-    channelActions: 'Manage channel {{name}}',
+    channelActions: 'Manage channel',
   },
   channels: {
     addTitle: 'Add channel',
