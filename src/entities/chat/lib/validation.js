@@ -1,10 +1,9 @@
 import * as Yup from 'yup';
-import { hasProfanity } from './profanity.js';
+import { sanitizeChannelName } from './profanity.js';
 
 const createChannelNameValidationSchema = ({
   channels,
   excludedChannelId = null,
-  shouldFilterProfanity = false,
   t,
 }) =>
   Yup.object({
@@ -14,11 +13,6 @@ const createChannelNameValidationSchema = ({
       .min(3, t('validation.channelNameLength'))
       .max(20, t('validation.channelNameLength'))
       .test(
-        'channel-name-without-profanity',
-        t('validation.noProfanity'),
-        (value) => !shouldFilterProfanity || !value || !hasProfanity(value.trim()),
-      )
-      .test(
         'unique-channel-name',
         t('validation.uniqueChannelName'),
         (value) =>
@@ -26,7 +20,8 @@ const createChannelNameValidationSchema = ({
           !channels.some(
             (channel) =>
               channel.id !== excludedChannelId &&
-              channel.name.toLowerCase() === value.trim().toLowerCase(),
+              sanitizeChannelName(channel.name).toLowerCase() ===
+                sanitizeChannelName(value.trim()).toLowerCase(),
           ),
       ),
   });

@@ -7,7 +7,7 @@ import {
   postChannel,
   postMessage,
 } from '../api/chat-api.js';
-import { sanitizeMessageText } from '../lib/profanity.js';
+import { sanitizeChannelName, sanitizeMessageText } from '../lib/profanity.js';
 import { logRollbarError } from '@/shared/lib/rollbar.js';
 
 const initialState = {
@@ -44,6 +44,13 @@ const sanitizeMessage = (message) => ({
 });
 
 const sanitizeMessages = (messages) => messages.map(sanitizeMessage);
+
+const sanitizeChannel = (channel) => ({
+  ...channel,
+  name: sanitizeChannelName(channel.name),
+});
+
+const sanitizeChannels = (channels) => channels.map(sanitizeChannel);
 
 const logChatAsyncError = ({ error, extra = {}, operation }) =>
   logRollbarError({
@@ -168,15 +175,16 @@ export const addNewChannel = createAsyncThunk(
       session: { token },
     } = getState();
     const trimmedName = name.trim();
+    const sanitizedName = sanitizeChannelName(trimmedName);
 
-    if (!token || trimmedName === '') {
+    if (!token || sanitizedName === '') {
       return rejectWithValue('invalid-channel-name');
     }
 
     try {
       return await postChannel({
         token,
-        name: trimmedName,
+        name: sanitizedName,
       });
     } catch (error) {
       if (isUnauthorizedError(error)) {
@@ -199,8 +207,9 @@ export const renameChannel = createAsyncThunk(
       session: { token },
     } = getState();
     const trimmedName = name.trim();
+    const sanitizedName = sanitizeChannelName(trimmedName);
 
-    if (!token || !channelId || trimmedName === '') {
+    if (!token || !channelId || sanitizedName === '') {
       return rejectWithValue('invalid-channel-name');
     }
 
@@ -208,7 +217,7 @@ export const renameChannel = createAsyncThunk(
       return await patchChannel({
         token,
         channelId,
-        name: trimmedName,
+        name: sanitizedName,
       });
     } catch (error) {
       if (isUnauthorizedError(error)) {
@@ -270,11 +279,11 @@ const chatSlice = createSlice({
     }),
     channelAdded: (state, action) => ({
       ...state,
-      channels: addChannel(state.channels, action.payload),
+      channels: addChannel(state.channels, sanitizeChannel(action.payload)),
     }),
     channelRenamed: (state, action) => ({
       ...state,
-      channels: renameExistingChannel(state.channels, action.payload),
+      channels: renameExistingChannel(state.channels, sanitizeChannel(action.payload)),
     }),
     channelRemoved: (state, action) => {
       const nextChannels = removeExistingChannel(state.channels, action.payload.id);
@@ -312,9 +321,12 @@ const chatSlice = createSlice({
       }))
       .addCase(fetchInitialChatData.fulfilled, (state, action) => ({
         ...state,
-        channels: action.payload.channels,
+        channels: sanitizeChannels(action.payload.channels),
         messages: sanitizeMessages(action.payload.messages),
-        currentChannelId: getCurrentChannelId(action.payload.channels, state.currentChannelId),
+        currentChannelId: getCurrentChannelId(
+          sanitizeChannels(action.payload.channels),
+          state.currentChannelId,
+        ),
         fetchStatus: 'succeeded',
         loadError: null,
       }))
@@ -346,7 +358,7 @@ const chatSlice = createSlice({
       }))
       .addCase(addNewChannel.fulfilled, (state, action) => ({
         ...state,
-        channels: addChannel(state.channels, action.payload),
+        channels: addChannel(state.channels, sanitizeChannel(action.payload)),
         currentChannelId: action.payload.id,
         addChannelStatus: 'idle',
         addChannelError: null,
@@ -363,7 +375,7 @@ const chatSlice = createSlice({
       }))
       .addCase(renameChannel.fulfilled, (state, action) => ({
         ...state,
-        channels: renameExistingChannel(state.channels, action.payload),
+        channels: renameExistingChannel(state.channels, sanitizeChannel(action.payload)),
         renameChannelStatus: 'idle',
         renameChannelError: null,
       }))

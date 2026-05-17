@@ -24,4 +24,6 @@ initializeFilter();
 
 export const sanitizeMessageText = (text) => filter.clean(text);
 
+export const sanitizeChannelName = (text) => filter.clean(text);
+
 export const hasProfanity = (text) => filter.check(text);

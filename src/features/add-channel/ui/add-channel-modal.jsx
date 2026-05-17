@@ -28,7 +28,6 @@ const AddChannelModal = ({ show, onHide }) => {
       initialValues={{ name: '' }}
       validationSchema={createChannelNameValidationSchema({
         channels,
-        shouldFilterProfanity: true,
         t,
       })}
       onSubmit={async (values, { setStatus, setSubmitting }) => {
