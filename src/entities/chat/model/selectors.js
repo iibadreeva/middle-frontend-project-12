@@ -14,7 +14,7 @@ export const selectAddChannelError = state => selectChat(state).addChannelError
 export const selectRenameChannelError = state => selectChat(state).renameChannelError
 export const selectRemoveChannelError = state => selectChat(state).removeChannelError
 export const selectConnectionError = state => selectChat(state).connectionError
-export const selectHasUnauthorizedChatError = state => {
+export const selectHasUnauthorizedChatError = (state) => {
   const {
     addChannelError, loadError, removeChannelError, renameChannelError, sendError,
   } = selectChat(state)
@@ -23,13 +23,13 @@ export const selectHasUnauthorizedChatError = state => {
     'unauthorized',
   )
 }
-export const selectCurrentChannel = state => {
+export const selectCurrentChannel = (state) => {
   const channels = selectChannels(state)
   const currentChannelId = selectCurrentChannelId(state)
 
   return channels.find(channel => channel.id === currentChannelId) || null
 }
-export const selectCurrentMessages = state => {
+export const selectCurrentMessages = (state) => {
   const messages = selectMessages(state)
   const currentChannelId = selectCurrentChannelId(state)
 

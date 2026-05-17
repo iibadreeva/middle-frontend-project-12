@@ -6,7 +6,7 @@ const useSelectChannel = () => {
   const dispatch = useDispatch()
 
   return useCallback(
-    channelId => {
+    (channelId) => {
       dispatch(setCurrentChannel(channelId))
     },
     [dispatch],

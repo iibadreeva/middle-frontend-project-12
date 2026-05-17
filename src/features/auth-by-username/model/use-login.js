@@ -12,7 +12,7 @@ const useLogin = () => {
   const location = useLocation()
   const { t } = useTranslation()
 
-  const login = async values => {
+  const login = async (values) => {
     try {
       const response = await axios.post('/api/v1/login', values)
       const credentials = {

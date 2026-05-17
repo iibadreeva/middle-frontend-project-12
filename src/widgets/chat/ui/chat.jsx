@@ -35,11 +35,11 @@ const Chat = () => {
     setModalState({ type: 'add', channel: null })
   }
 
-  const openRenameChannelModal = channel => {
+  const openRenameChannelModal = (channel) => {
     setModalState({ type: 'rename', channel })
   }
 
-  const openRemoveChannelModal = channel => {
+  const openRemoveChannelModal = (channel) => {
     setModalState({ type: 'remove', channel })
   }
 

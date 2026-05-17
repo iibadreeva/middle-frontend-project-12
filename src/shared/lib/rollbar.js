@@ -35,7 +35,7 @@ export const buildRollbarPerson = (session = {}) => {
   }
 }
 
-export const configureRollbarPerson = session => {
+export const configureRollbarPerson = (session) => {
   if (!rollbar) {
     return
   }
@@ -47,7 +47,7 @@ export const configureRollbarPerson = session => {
   })
 }
 
-const getErrorStatus = error => {
+const getErrorStatus = (error) => {
   if (!error || !error.response || typeof error.response.status === 'undefined') {
     return null
   }

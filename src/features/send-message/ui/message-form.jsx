@@ -27,7 +27,7 @@ const MessageForm = () => {
   const trimmedBody = body.trim()
   const isSubmitDisabled = trimmedBody === '' || !currentChannelId || sendStatus === 'loading'
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (isSubmitDisabled) {

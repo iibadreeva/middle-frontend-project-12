@@ -29,7 +29,7 @@ const ChannelSidebar = ({
         </Button>
       </div>
       <div className="overflow-auto chatChannelsList flex-grow-1">
-        {channels.map(channel => {
+        {channels.map((channel) => {
           const isActive = channel.id === currentChannelId
           const variant = isActive ? 'secondary' : 'light'
 

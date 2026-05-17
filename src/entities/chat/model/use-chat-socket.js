@@ -22,22 +22,22 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
 
     const socket = connectChatSocket()
 
-    const handleNewMessage = message => {
+    const handleNewMessage = (message) => {
       dispatch(messageReceived(message))
     }
-    const handleNewChannel = channel => {
+    const handleNewChannel = (channel) => {
       dispatch(channelAdded(channel))
     }
-    const handleRemoveChannel = channel => {
+    const handleRemoveChannel = (channel) => {
       dispatch(channelRemoved(channel))
     }
-    const handleRenameChannel = channel => {
+    const handleRenameChannel = (channel) => {
       dispatch(channelRenamed(channel))
     }
     const handleConnect = () => {
       dispatch(socketConnected())
     }
-    const handleDisconnect = reason => {
+    const handleDisconnect = (reason) => {
       if (reason !== 'io client disconnect') {
         logRollbarWarning({
           message: 'Chat socket disconnected unexpectedly',
@@ -51,7 +51,7 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
 
       dispatch(socketDisconnected())
     }
-    const handleConnectError = error => {
+    const handleConnectError = (error) => {
       logRollbarError({
         message: 'Chat socket connection failed',
         error,

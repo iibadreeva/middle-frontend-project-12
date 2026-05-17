@@ -15,11 +15,11 @@ const createChannelNameValidationSchema = ({
       'unique-channel-name',
       t('validation.uniqueChannelName'),
       value => !value
-          || !channels.some(
-            channel => channel.id !== excludedChannelId
-              && sanitizeChannelName(channel.name).toLowerCase()
-                === sanitizeChannelName(value.trim()).toLowerCase(),
-          ),
+        || !channels.some(
+          channel => channel.id !== excludedChannelId
+            && sanitizeChannelName(channel.name).toLowerCase()
+              === sanitizeChannelName(value.trim()).toLowerCase(),
+        ),
     ),
 })
 

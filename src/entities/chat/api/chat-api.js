@@ -10,7 +10,7 @@ const buildRequestConfig = token => ({
   },
 })
 
-export const fetchChatData = async token => {
+export const fetchChatData = async (token) => {
   const requestConfig = buildRequestConfig(token)
 
   const [channelsResponse, messagesResponse] = await Promise.all([

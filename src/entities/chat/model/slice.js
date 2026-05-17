@@ -304,7 +304,7 @@ const chatSlice = createSlice({
     }),
     resetChat: () => initialState,
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(fetchInitialChatData.pending, state => ({
         ...state,
