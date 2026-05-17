@@ -28,9 +28,11 @@ const LoginForm = () => {
 
         try {
           await login(values)
-        } catch (error) {
+        }
+        catch (error) {
           setStatus(error.message)
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}

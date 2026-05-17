@@ -28,7 +28,8 @@ const useLogin = () => {
         : appRoutes.home
 
       navigate(nextPath, { replace: true })
-    } catch (error) {
+    }
+    catch (error) {
       if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
         throw new Error(t('errors.loginInvalidCredentials'))
       }

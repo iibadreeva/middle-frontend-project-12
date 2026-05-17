@@ -31,9 +31,11 @@ const SignupForm = () => {
 
         try {
           await signup(values)
-        } catch (error) {
+        }
+        catch (error) {
           setStatus(error.message)
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}

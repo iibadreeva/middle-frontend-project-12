@@ -37,11 +37,13 @@ const AddChannelModal = ({ show, onHide }) => {
           await dispatch(addNewChannel(values.name)).unwrap()
           toast.success(t('toasts.channelCreated'))
           onHide()
-        } catch (error) {
+        }
+        catch (error) {
           if (error !== 'unauthorized') {
             setStatus(t('errors.addChannelFailed'))
           }
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}

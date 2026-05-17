@@ -109,7 +109,8 @@ export const fetchInitialChatData = createAsyncThunk(
 
     try {
       return await fetchChatData(token)
-    } catch (error) {
+    }
+    catch (error) {
       if (isUnauthorizedError(error)) {
         return rejectWithValue('unauthorized')
       }
@@ -145,7 +146,8 @@ export const sendMessage = createAsyncThunk(
         channelId: currentChannelId,
         username,
       })
-    } catch (error) {
+    }
+    catch (error) {
       if (isUnauthorizedError(error)) {
         return rejectWithValue('unauthorized')
       }
@@ -178,7 +180,8 @@ export const addNewChannel = createAsyncThunk(
         token,
         name: sanitizedName,
       })
-    } catch (error) {
+    }
+    catch (error) {
       if (isUnauthorizedError(error)) {
         return rejectWithValue('unauthorized')
       }
@@ -211,7 +214,8 @@ export const renameChannel = createAsyncThunk(
         channelId,
         name: sanitizedName,
       })
-    } catch (error) {
+    }
+    catch (error) {
       if (isUnauthorizedError(error)) {
         return rejectWithValue('unauthorized')
       }
@@ -242,7 +246,8 @@ export const removeChannel = createAsyncThunk(
         token,
         channelId,
       })
-    } catch (error) {
+    }
+    catch (error) {
       if (isUnauthorizedError(error)) {
         return rejectWithValue('unauthorized')
       }

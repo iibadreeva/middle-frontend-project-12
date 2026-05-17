@@ -23,7 +23,8 @@ const RemoveChannelModal = ({ channel, show, onHide }) => {
       await dispatch(removeChannel(channel.id)).unwrap()
       toast.success(t('toasts.channelRemoved'))
       onHide()
-    } catch (requestError) {
+    }
+    catch (requestError) {
       if (requestError !== 'unauthorized') {
         setError(t('errors.removeChannelFailed'))
       }

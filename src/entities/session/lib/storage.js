@@ -25,7 +25,12 @@ export const loadSession = () => {
       token: session.token,
       isAuthenticated: true,
     }
-  } catch (error) {
+  }
+  catch (error) {
+    if (error) {
+      return emptySession
+    }
+
     return emptySession
   }
 }

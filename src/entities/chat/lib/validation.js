@@ -18,7 +18,7 @@ const createChannelNameValidationSchema = ({
         || !channels.some(
           channel => channel.id !== excludedChannelId
             && sanitizeChannelName(channel.name).toLowerCase()
-              === sanitizeChannelName(value.trim()).toLowerCase(),
+            === sanitizeChannelName(value.trim()).toLowerCase(),
         ),
     ),
 })

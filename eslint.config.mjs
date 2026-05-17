@@ -116,7 +116,9 @@ export default [
             '@stylistic/arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
             '@stylistic/arrow-spacing': 'error',
             '@stylistic/block-spacing': 'error',
-            '@stylistic/brace-style': ['error', '1tbs'],
+            '@stylistic/brace-style': ['error', 'stroustrup'],
+            '@stylistic/indent-binary-ops': ['error', 2],
+            '@stylistic/multiline-ternary': ['error', 'always-multiline'],
             '@stylistic/comma-spacing': 'error',
             '@stylistic/jsx-wrap-multilines': [
               'error',

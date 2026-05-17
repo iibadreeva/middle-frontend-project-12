@@ -39,11 +39,13 @@ const RenameChannelModal = ({ channel, show, onHide }) => {
           await dispatch(renameChannel({ channelId: channel.id, name: values.name })).unwrap()
           toast.success(t('toasts.channelRenamed'))
           onHide()
-        } catch (error) {
+        }
+        catch (error) {
           if (error !== 'unauthorized') {
             setStatus(t('errors.renameChannelFailed'))
           }
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}

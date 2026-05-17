@@ -22,7 +22,8 @@ const useSignup = () => {
       saveSession(credentials)
       dispatch(setCredentials(credentials))
       navigate(appRoutes.home, { replace: true })
-    } catch (error) {
+    }
+    catch (error) {
       if (axios.isAxiosError(error) && error.response && error.response.status === 409) {
         throw new Error(t('errors.signupUserExists'))
       }
