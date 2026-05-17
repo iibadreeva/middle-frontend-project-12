@@ -44,6 +44,7 @@ const ChannelNameModal = ({
       )}
       <Form noValidate onSubmit={onSubmit}>
         <Form.Group controlId={inputId}>
+          <Form.Label htmlFor={inputId}>{inputAriaLabel}</Form.Label>
           <Form.Control
             ref={inputRef}
             id={inputId}
