@@ -68,8 +68,9 @@ const ChannelSidebar = ({
                 className={`border-0 shadow-none chatChannelToggle ${
                   isActive ? 'text-white' : 'text-dark'
                 }`}
-                aria-label={t('chat.channelActions', { name: channel.name })}
-              />
+              >
+                <span className="visually-hidden">{t('chat.channelActions', { name: channel.name })}</span>
+              </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => onOpenRemoveChannel(channel)}>
                   {t('channels.remove')}
