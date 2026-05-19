@@ -24,6 +24,10 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
 
     const socket = connectChatSocket()
 
+    if (!socket.connected) {
+      dispatch(socketConnecting())
+    }
+
     const handleNewMessage = (message) => {
       dispatch(messageReceived(message))
     }

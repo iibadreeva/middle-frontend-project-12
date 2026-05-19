@@ -29,14 +29,14 @@ const MessageForm = () => {
   const previousConnectionErrorRef = useRef(null)
 
   const trimmedBody = body.trim()
-  const isSubmitDisabled =
-    trimmedBody === '' || !currentChannelId || sendStatus === 'loading' || !isChatOnline
+  const isSubmitDisabled
+    = trimmedBody === '' || !currentChannelId || sendStatus === 'loading' || !isChatOnline
 
   // disconnected → скоро reconnect_attempt; кнопку Retry не показываем.
   const isReconnecting = socketStatus === 'connecting' || socketStatus === 'disconnected'
   // error — автопереподключение исчерпано или первый connect не удался.
-  const showConnectionError =
-    socketStatus === 'error' && connectionError === 'connection-failed'
+  const showConnectionError
+    = socketStatus === 'error' && connectionError === 'connection-failed'
 
   const handleSubmit = async (event) => {
     event.preventDefault()

@@ -151,8 +151,8 @@ export const sendMessage = createAsyncThunk(
       chat: { currentChannelId, socketStatus },
     } = getState()
 
-    // Live-чат и отправка согласованы: без сокета не шлём (дублирует disabled в форме).
-    if (socketStatus !== 'connected') {
+    // Не шлём при обрыве/переподключении; idle до первого connect допустим (REST).
+    if (['disconnected', 'connecting', 'error'].includes(socketStatus)) {
       return rejectWithValue('socket-offline')
     }
 

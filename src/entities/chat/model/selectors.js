@@ -8,8 +8,14 @@ export const selectAddChannelStatus = state => selectChat(state).addChannelStatu
 export const selectRenameChannelStatus = state => selectChat(state).renameChannelStatus
 export const selectRemoveChannelStatus = state => selectChat(state).removeChannelStatus
 export const selectSocketStatus = state => selectChat(state).socketStatus
-// Готовность чата к отправке: live-события и разрешение sendMessage завязаны на сокет.
-export const selectIsChatOnline = state => selectChat(state).socketStatus === 'connected'
+const SOCKET_SEND_BLOCKING_STATUSES = ['disconnected', 'connecting', 'error']
+
+// Блокируем отправку при обрыве/переподключении; idle до первого connect — не блокируем.
+export const selectIsChatOnline = (state) => {
+  const { socketStatus } = selectChat(state)
+
+  return !SOCKET_SEND_BLOCKING_STATUSES.includes(socketStatus)
+}
 export const selectLoadError = state => selectChat(state).loadError
 export const selectSendError = state => selectChat(state).sendError
 export const selectAddChannelError = state => selectChat(state).addChannelError
