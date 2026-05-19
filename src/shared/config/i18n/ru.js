@@ -44,8 +44,9 @@ const ru = {
     chatLoadGeneric: 'Произошла ошибка при загрузке чата.',
     messageSendFailed: 'Не удалось отправить сообщение. Попробуйте еще раз.',
     messageNotSent: 'Сообщение не отправлено.',
-    connectionLost: 'Ошибка соединения',
-    connectionFailed: 'Ошибка соединения',
+    connectionLost: 'Связь потеряна. Переподключаемся...',
+    connectionFailed: 'Не удалось подключиться к серверу.',
+    socketOffline: 'Чат недоступен. Дождитесь подключения.',
     addChannelFailed: 'Не удалось создать канал. Попробуйте еще раз.',
     renameChannelFailed: 'Не удалось переименовать канал. Попробуйте еще раз.',
     removeChannelFailed: 'Не удалось удалить канал. Попробуйте еще раз.',
@@ -64,6 +65,9 @@ const ru = {
     channels: 'Каналы',
     addChannelAria: 'Добавить канал',
     channelActions: 'Управление каналом',
+    retry: 'Повторить',
+    connecting: 'Подключение...',
+    reconnecting: 'Переподключаемся...',
   },
   channels: {
     addTitle: 'Добавить канал',
@@ -88,7 +92,8 @@ const ru = {
   },
   rollbar: {
     fallbackTitle: 'Что-то пошло не так.',
-    fallbackDescription: 'Мы уже получили информацию об ошибке. Попробуйте обновить страницу или вернуться на главную.',
+    fallbackDescription:
+      'Мы уже получили информацию об ошибке. Попробуйте обновить страницу или вернуться на главную.',
     reloadPage: 'Обновить страницу',
     goHome: 'На главную',
   },

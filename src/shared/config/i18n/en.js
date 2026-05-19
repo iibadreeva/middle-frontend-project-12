@@ -46,6 +46,7 @@ const en = {
     messageNotSent: 'Message was not sent.',
     connectionLost: 'Connection lost. Reconnecting...',
     connectionFailed: 'Could not connect to the message server.',
+    socketOffline: 'Chat is unavailable. Wait for connection.',
     addChannelFailed: 'Failed to create channel. Please try again.',
     renameChannelFailed: 'Failed to rename channel. Please try again.',
     removeChannelFailed: 'Failed to delete channel. Please try again.',
@@ -62,6 +63,9 @@ const en = {
     channels: 'Channels',
     addChannelAria: 'Add channel',
     channelActions: 'Manage channel',
+    retry: 'Retry',
+    connecting: 'Connecting...',
+    reconnecting: 'Reconnecting...',
   },
   channels: {
     addTitle: 'Add channel',

@@ -8,6 +8,7 @@ export {
   channelRenamed,
   default as chatReducer,
   fetchInitialChatData,
+  refetchChatData,
   messageReceived,
   removeChannel,
   resetChat,
@@ -16,6 +17,7 @@ export {
   setCurrentChannel,
   socketConnected,
   socketDisconnected,
+  socketConnecting,
   socketErrored,
 } from './model/slice.js'
 export {
@@ -37,6 +39,7 @@ export {
   selectRenameChannelStatus,
   selectSendError,
   selectSendStatus,
+  selectIsChatOnline,
   selectSocketStatus,
 } from './model/selectors.js'
 export { default as useChatBootstrap } from './model/use-chat-bootstrap.js'

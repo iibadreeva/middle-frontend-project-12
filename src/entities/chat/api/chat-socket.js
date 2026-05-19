@@ -7,7 +7,13 @@ const socketState = {
 export const connectChatSocket = () => {
   if (socketState.socket === null) {
     socketState.socket = io({
+      // Подключаемся вручную после подписки на события в useChatSocket.
       autoConnect: false,
+      // При обрыве сети клиент сам переподключается; пользователю не нужен Retry.
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     })
   }
 

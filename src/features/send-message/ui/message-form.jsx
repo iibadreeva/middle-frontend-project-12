@@ -4,13 +4,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import {
+  connectChatSocket,
   hasProfanity,
   selectConnectionError,
   selectCurrentChannelId,
+  selectIsChatOnline,
   selectSendError,
   selectSendStatus,
   selectSocketStatus,
   sendMessage,
+  socketConnecting,
 } from '@/entities/chat'
 
 const MessageForm = () => {
@@ -20,12 +23,20 @@ const MessageForm = () => {
   const sendStatus = useSelector(selectSendStatus)
   const sendError = useSelector(selectSendError)
   const socketStatus = useSelector(selectSocketStatus)
+  const isChatOnline = useSelector(selectIsChatOnline)
   const connectionError = useSelector(selectConnectionError)
   const [body, setBody] = useState('')
   const previousConnectionErrorRef = useRef(null)
 
   const trimmedBody = body.trim()
-  const isSubmitDisabled = trimmedBody === '' || !currentChannelId || sendStatus === 'loading'
+  const isSubmitDisabled =
+    trimmedBody === '' || !currentChannelId || sendStatus === 'loading' || !isChatOnline
+
+  // disconnected → скоро reconnect_attempt; кнопку Retry не показываем.
+  const isReconnecting = socketStatus === 'connecting' || socketStatus === 'disconnected'
+  // error — автопереподключение исчерпано или первый connect не удался.
+  const showConnectionError =
+    socketStatus === 'error' && connectionError === 'connection-failed'
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -49,18 +60,22 @@ const MessageForm = () => {
     }
   }
 
+  // Toast только при финальной ошибке; при обрыве достаточно баннера reconnecting.
   useEffect(() => {
     if (connectionError && previousConnectionErrorRef.current !== connectionError) {
-      if (connectionError === 'connection-lost') {
-        toast.warn(t('errors.connectionLost'))
-      }
-      else if (connectionError === 'connection-failed') {
+      if (connectionError === 'connection-failed') {
         toast.error(t('errors.connectionFailed'))
       }
     }
 
     previousConnectionErrorRef.current = connectionError
   }, [connectionError, t])
+
+  const handleRetryConnection = () => {
+    dispatch(socketConnecting())
+    const socket = connectChatSocket()
+    socket.connect()
+  }
 
   const renderSubmitButtonContent = () => {
     if (sendStatus === 'loading') {
@@ -87,20 +102,43 @@ const MessageForm = () => {
     )
   }
 
+  const renderSendErrorMessage = () => {
+    if (sendError === 'send-failed') {
+      return t('errors.messageSendFailed')
+    }
+
+    if (sendError === 'socket-offline') {
+      return t('errors.socketOffline')
+    }
+
+    return t('errors.messageNotSent')
+  }
+
   return (
     <div>
-      {(socketStatus === 'disconnected' || socketStatus === 'error') && connectionError && (
-        <Alert variant="warning" className="mb-3 py-2">
-          {connectionError === 'connection-lost'
-            ? t('errors.connectionLost')
-            : t('errors.connectionFailed')}
+      {isReconnecting && (
+        <Alert variant="info" className="mb-3 py-2">
+          {t('chat.reconnecting')}
+        </Alert>
+      )}
+      {showConnectionError && (
+        <Alert
+          variant="warning"
+          className="mb-3 py-2 d-flex justify-content-between align-items-center"
+        >
+          <span>{t('errors.connectionFailed')}</span>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-secondary ms-2"
+            onClick={handleRetryConnection}
+          >
+            {t('chat.retry')}
+          </button>
         </Alert>
       )}
       {sendError && sendError !== 'unauthorized' && (
         <Alert variant="danger" className="mb-3 py-2">
-          {sendError === 'send-failed'
-            ? t('errors.messageSendFailed')
-            : t('errors.messageNotSent')}
+          {renderSendErrorMessage()}
         </Alert>
       )}
       <form onSubmit={handleSubmit}>
@@ -112,7 +150,7 @@ const MessageForm = () => {
             aria-label={t('chat.composerAria')}
             value={body}
             onChange={event => setBody(event.target.value)}
-            disabled={!currentChannelId || sendStatus === 'loading'}
+            disabled={!currentChannelId || sendStatus === 'loading' || !isChatOnline}
           />
           <button
             type="submit"

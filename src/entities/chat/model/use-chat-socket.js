@@ -7,8 +7,10 @@ import {
   channelRemoved,
   channelRenamed,
   messageReceived,
+  refetchChatData,
   socketConnected,
   socketDisconnected,
+  socketConnecting,
   socketErrored,
 } from './slice.js'
 
@@ -34,10 +36,20 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
     const handleRenameChannel = (channel) => {
       dispatch(channelRenamed(channel))
     }
+    // Первое подключение: данные уже загружены fetchInitialChatData.
     const handleConnect = () => {
       dispatch(socketConnected())
     }
+    // После обрыва сокет не шлёт историю — подтягиваем REST.
+    const handleReconnect = () => {
+      dispatch(socketConnected())
+      dispatch(refetchChatData())
+    }
+    const handleConnecting = () => {
+      dispatch(socketConnecting())
+    }
     const handleDisconnect = (reason) => {
+      // Явный disconnect при logout/unmount — не считаем ошибкой.
       if (reason !== 'io client disconnect') {
         logRollbarWarning({
           message: 'Chat socket disconnected unexpectedly',
@@ -68,8 +80,13 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
     socket.on('removeChannel', handleRemoveChannel)
     socket.on('renameChannel', handleRenameChannel)
     socket.on('connect', handleConnect)
+    socket.on('reconnect', handleReconnect)
     socket.on('disconnect', handleDisconnect)
     socket.on('connect_error', handleConnectError)
+    socket.on('reconnect_attempt', handleConnecting)
+    // Неудачная попытка reconnect — ещё не финал, UI остаётся в «переподключаемся».
+    socket.on('reconnect_error', handleConnecting)
+    socket.on('reconnect_failed', handleConnectError)
 
     if (socket.connected) {
       dispatch(socketConnected())
@@ -81,8 +98,12 @@ const useChatSocket = ({ isAuthenticated, fetchStatus }) => {
       socket.off('removeChannel', handleRemoveChannel)
       socket.off('renameChannel', handleRenameChannel)
       socket.off('connect', handleConnect)
+      socket.off('reconnect', handleReconnect)
       socket.off('disconnect', handleDisconnect)
       socket.off('connect_error', handleConnectError)
+      socket.off('reconnect_attempt', handleConnecting)
+      socket.off('reconnect_error', handleConnecting)
+      socket.off('reconnect_failed', handleConnectError)
       disconnectChatSocket()
     }
   }, [dispatch, fetchStatus, isAuthenticated])

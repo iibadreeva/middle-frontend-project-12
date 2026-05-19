@@ -52,31 +52,39 @@ const sanitizeChannel = channel => ({
 
 const sanitizeChannels = channels => channels.map(sanitizeChannel)
 
-const logChatAsyncError = ({ error, extra = {}, operation }) => logRollbarError({
-  message: `Chat operation failed: ${operation}`,
-  error,
-  extra: {
-    feature: 'chat',
-    operation,
-    ...extra,
-  },
-})
+const logChatAsyncError = ({ error, extra = {}, operation }) =>
+  logRollbarError({
+    message: `Chat operation failed: ${operation}`,
+    error,
+    extra: {
+      feature: 'chat',
+      operation,
+      ...extra,
+    },
+  })
 
 const addChannel = (channels, channel) => {
   const hasChannel = channels.some(currentChannel => currentChannel.id === channel.id)
 
   if (hasChannel) {
-    return channels.map(currentChannel => (currentChannel.id === channel.id ? channel : currentChannel))
+    return channels.map(currentChannel =>
+      currentChannel.id === channel.id ? channel : currentChannel,
+    )
   }
 
   return [...channels, channel]
 }
 
-const renameExistingChannel = (channels, channel) => channels.map(currentChannel => (currentChannel.id === channel.id ? { ...currentChannel, ...channel } : currentChannel))
+const renameExistingChannel = (channels, channel) =>
+  channels.map(currentChannel =>
+    currentChannel.id === channel.id ? { ...currentChannel, ...channel } : currentChannel,
+  )
 
-const removeExistingChannel = (channels, channelId) => channels.filter(channel => channel.id !== channelId)
+const removeExistingChannel = (channels, channelId) =>
+  channels.filter(channel => channel.id !== channelId)
 
-const removeChannelMessages = (messages, channelId) => messages.filter(message => message.channelId !== channelId)
+const removeChannelMessages = (messages, channelId) =>
+  messages.filter(message => message.channelId !== channelId)
 
 const getCurrentChannelId = (channels, currentChannelId) => {
   if (channels.length === 0) {
@@ -98,30 +106,41 @@ const getCurrentChannelId = (channels, currentChannelId) => {
   return channels[0].id
 }
 
+// Общая загрузка чата для первого входа и синхронизации после reconnect.
+const loadChatData = async (getState, rejectWithValue, operation) => {
+  const { token } = getState().session
+
+  if (!token) {
+    return rejectWithValue('missing-token')
+  }
+
+  try {
+    return await fetchChatData(token)
+  }
+  catch (error) {
+    if (isUnauthorizedError(error)) {
+      return rejectWithValue('unauthorized')
+    }
+
+    logChatAsyncError({ error, operation })
+    return rejectWithValue('load-failed')
+  }
+}
+
 export const fetchInitialChatData = createAsyncThunk(
   'chat/fetchInitialChatData',
-  async (_, { getState, rejectWithValue }) => {
-    const { token } = getState().session
-
-    if (!token) {
-      return rejectWithValue('missing-token')
-    }
-
-    try {
-      return await fetchChatData(token)
-    }
-    catch (error) {
-      if (isUnauthorizedError(error)) {
-        return rejectWithValue('unauthorized')
-      }
-
-      logChatAsyncError({ error, operation: 'fetchInitialChatData' })
-      return rejectWithValue('load-failed')
-    }
-  },
+  async (_, { getState, rejectWithValue }) =>
+    loadChatData(getState, rejectWithValue, 'fetchInitialChatData'),
   {
     condition: (_, { getState }) => getState().chat.fetchStatus === 'idle',
   },
+)
+
+// Без condition: можно вызвать повторно, пока сокет восстанавливается после обрыва.
+export const refetchChatData = createAsyncThunk(
+  'chat/refetchChatData',
+  async (_, { getState, rejectWithValue }) =>
+    loadChatData(getState, rejectWithValue, 'refetchChatData'),
 )
 
 export const sendMessage = createAsyncThunk(
@@ -129,8 +148,13 @@ export const sendMessage = createAsyncThunk(
   async (body, { getState, rejectWithValue }) => {
     const {
       session: { token, username },
-      chat: { currentChannelId },
+      chat: { currentChannelId, socketStatus },
     } = getState()
+
+    // Live-чат и отправка согласованы: без сокета не шлём (дублирует disabled в форме).
+    if (socketStatus !== 'connected') {
+      return rejectWithValue('socket-offline')
+    }
 
     const trimmedBody = body.trim()
     const sanitizedBody = sanitizeMessageText(trimmedBody)
@@ -302,6 +326,11 @@ const chatSlice = createSlice({
       socketStatus: 'disconnected',
       connectionError: 'connection-lost',
     }),
+    socketConnecting: state => ({
+      ...state,
+      socketStatus: 'connecting',
+      connectionError: null,
+    }),
     socketErrored: state => ({
       ...state,
       socketStatus: 'error',
@@ -331,6 +360,16 @@ const chatSlice = createSlice({
         ...state,
         fetchStatus: action.payload === 'unauthorized' ? 'idle' : 'failed',
         loadError: action.payload || 'load-failed',
+      }))
+      // Догоняем пропущенное за время offline; fetchStatus не трогаем.
+      .addCase(refetchChatData.fulfilled, (state, action) => ({
+        ...state,
+        channels: sanitizeChannels(action.payload.channels),
+        messages: sanitizeMessages(action.payload.messages),
+        currentChannelId: getCurrentChannelId(
+          sanitizeChannels(action.payload.channels),
+          state.currentChannelId,
+        ),
       }))
       .addCase(sendMessage.pending, state => ({
         ...state,
@@ -415,6 +454,7 @@ export const {
   setCurrentChannel,
   socketConnected,
   socketDisconnected,
+  socketConnecting,
   socketErrored,
 } = chatSlice.actions
 
