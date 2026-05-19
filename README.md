@@ -7,7 +7,7 @@
 
 ## Демо
 
-- [Деплой проекта](https://middle-frontend-project-12.onrender.com)
+- [Деплой проекта](https://middle-frontend-project-12.onrender.com/)
 - [Референс интерфейса](https://frontend-chat-ru.hexlet.app)
 
 Тестовый пользователь:
